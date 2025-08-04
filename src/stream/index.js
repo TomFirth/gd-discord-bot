@@ -1,5 +1,5 @@
-import { free } from './free.js';
+import { startFreeStream } from './free.js';
 
 export const initializeStreams = (client) => {
-  free(client);
-}
+  startFreeStream(client);
+};
