@@ -6,7 +6,7 @@ const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN);
 
 (async () => {
   try {
-    await rest.put(Routes.applicationGuildCommands(config.get<string>('clientId'), config.get<string>('guildId')), {
+    await rest.put(Routes.applicationGuildCommands(config.get('clientId'), config.get('guildId')), {
       body: [compareGamesCommand.toJSON()],
     });
     console.log('Successfully registered application commands.');

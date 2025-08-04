@@ -5,26 +5,24 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node main.ts",
-    "dev": "NODE_ENV=development nodemon index.js"
+    "start": "node main.js",
+    "dev": "nodemon main.js NODE_ENV=development"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@discordjs/builders": "^1.9.0",
-    "@discordjs/rest": "^2.4.0",
-    "axios": "^1.7.7",
-    "cron": "^3.1.7",
-    "discord.js": "^14.16.3",
-    "rss-parser": "^3.13.0",
-    "typescript": "^5.6.3"
+    "@discordjs/builders": "^1.11.2",
+    "@discordjs/rest": "^2.5.1",
+    "axios": "^1.11.0",
+    "cron": "^4.3.3",
+    "discord.js": "^14.21.0",
+    "rss-parser": "^3.13.0"
   },
   "devDependencies": {
-    "@types/config": "^3.3.5",
-    "config": "^3.3.12",
-    "dotenv": "^16.4.5",
-    "nodemon": "^3.1.7"
+    "config": "^4.1.0",
+    "dotenv": "^17.2.1",
+    "nodemon": "^3.1.10"
   }
 }

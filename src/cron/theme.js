@@ -1,14 +1,14 @@
 import { CronJob } from 'cron';
-import { Client, TextChannel } from 'discord.js';
+import { Client } from 'discord.js';
 import config from 'config';
 
-const channelId = config.get<string>('channelIds.gemeral');
-const schedule = config.get<string>('schedule.theme');
+const channelId = config.get('channelIds.gemeral');
+const schedule = config.get('schedule.theme');
 
 export default function theme() {
   new CronJob(schedule, () => {
     const client = new Client({ intents: [] });
-    const channel = client.channels.cache.get(channelId) as TextChannel;
+    const channel = client.channels.cache.get(channelId);
 
     if (channel) {
       channel.send("Weekly Theme: Get inspired and check out this week's theme!");
