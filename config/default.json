@@ -5,7 +5,7 @@
     "general": "1262380130693808212"
   },
   "schedule": {
-    "codeChallenge": "0 17 * * 5",
+    "challenge": "0 17 * * 5",
     "gamejam": "0 17 * * 5",
     "theme": "0 9 * * 1"
   },

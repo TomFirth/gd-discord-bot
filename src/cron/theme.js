@@ -2,7 +2,7 @@ import { CronJob } from 'cron';
 import { Client } from 'discord.js';
 import config from 'config';
 
-const channelId = config.get('channelIds.gemeral');
+const channelId = config.get('channelIds.general');
 const schedule = config.get('schedule.theme');
 
 export default function theme() {

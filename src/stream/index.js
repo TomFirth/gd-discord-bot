@@ -1,7 +1,5 @@
-import free from './free';
+import free from './free.js';
 
-const initializeStreams = () => {
+export const initializeStreams = () => {
   free();
 }
-
-export default initializeStreams;

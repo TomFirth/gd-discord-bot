@@ -1,11 +1,9 @@
-import codeChallenge from './challenge';
-import gameJam from './gamejam';
-import theme from './theme';
+import challenge from './challenge.js';
+import gameJam from './gamejam.js';
+import theme from './theme.js';
 
-const initializeScheduledEvents = () => {
-  codeChallenge();
+export const initializeScheduledEvents = () => {
+  challenge();
   gameJam();
   theme();
-}
-
-export default initializeScheduledEvents;
+};

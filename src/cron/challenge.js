@@ -3,9 +3,9 @@ import { Client } from 'discord.js';
 import config from 'config';
 
 const channelId = config.get('channelIds.challenges');
-const schedule = config.get('schedule.codeChallenge');
+const schedule = config.get('schedule.challenge');
 
-export default function codeChallenge() {
+export default function challenge() {
   new CronJob(schedule, () => {
     const client = new Client({ intents: [] });
     const channel = client.channels.cache.get(channelId);
