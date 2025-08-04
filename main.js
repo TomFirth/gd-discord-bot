@@ -2,8 +2,8 @@ import { Client, GatewayIntentBits } from 'discord.js';
 
 // import { commandHandlers } from './src/commands';
 
-import { initializeScheduledEvents } from './src/cron';
-import { initializeStreams } from './src/stream';
+import { initializeScheduledEvents } from './src/cron/index.js';
+import { initializeStreams } from './src/stream/index.js';
 
 const client = new Client({
   intents: [
