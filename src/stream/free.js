@@ -1,14 +1,32 @@
 import Parser from 'rss-parser';
 import config from 'config';
+import fs from 'fs/promises';
+import path from 'path';
 
 const parser = new Parser();
 const channelId = config.get('channelIds.freegames');
 const feedUrl = config.get('urls.free');
 
-const postedItems = new Set();
+const postedItemsFile = path.resolve('./data/posted-items.json');
+
+async function loadPostedItems() {
+  try {
+    const data = await fs.readFile(postedItemsFile, 'utf8');
+    return new Set(JSON.parse(data));
+  } catch (err) {
+    if (err.code === 'ENOENT') return new Set();
+    throw err;
+  }
+}
+
+async function savePostedItems(set) {
+  const arr = Array.from(set);
+  await fs.writeFile(postedItemsFile, JSON.stringify(arr, null, 2));
+}
 
 export const free = async (client) => {
   try {
+    const postedItems = await loadPostedItems();
     const feed = await parser.parseURL(feedUrl);
     const channel = await client.channels.fetch(channelId);
 
@@ -17,15 +35,29 @@ export const free = async (client) => {
       return;
     }
 
+    let newPosts = false;
+
     for (const item of feed.items) {
-      const uniqueId = item.link || item.guid || item.title;
+    const uniqueId = item.link || item.guid || item.title;
 
-      // Skip if already posted
-      if (postedItems.has(uniqueId)) continue;
+    if (postedItems.has(uniqueId)) continue;
 
-      const message = `${item.title}\n${item.link}`;
-      await channel.send(message);
-      postedItems.add(uniqueId);
+    const messageContent = `${item.title}\n${item.link}`;
+    const sentMessage = await channel.send(messageContent);
+
+    try {
+      await sentMessage.react('👍');
+      await sentMessage.react('👎');
+    } catch (err) {
+      console.warn('Failed to add reactions:', err);
+    }
+
+    postedItems.add(uniqueId);
+    newPosts = true;
+  }
+
+    if (newPosts) {
+      await savePostedItems(postedItems);
     }
   } catch (error) {
     console.error('Error fetching RSS feed:', error);
