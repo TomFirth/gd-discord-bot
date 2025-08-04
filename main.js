@@ -1,4 +1,6 @@
 import { Client, GatewayIntentBits } from 'discord.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // import { commandHandlers } from './src/commands';
 
@@ -15,10 +17,10 @@ const client = new Client({
 
 client.login(process.env.BOT_TOKEN);
 
-client.once('ready', () => {
+client.once('ready', async () => {
   console.log(`Bot started at ${new Date()}`);
-  initializeScheduledEvents();
-  initializeStreams();
+  await initializeScheduledEvents(client);
+  await initializeStreams(client);
 });
 
 /* client.on('interactionCreate', async (interaction) => {

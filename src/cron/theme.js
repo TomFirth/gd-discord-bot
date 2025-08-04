@@ -1,13 +1,11 @@
 import { CronJob } from 'cron';
-import { Client } from 'discord.js';
 import config from 'config';
 
 const channelId = config.get('channelIds.general');
 const schedule = config.get('schedule.theme');
 
-export default function theme() {
+export const theme = (client) => {
   new CronJob(schedule, () => {
-    const client = new Client({ intents: [] });
     const channel = client.channels.cache.get(channelId);
 
     if (channel) {

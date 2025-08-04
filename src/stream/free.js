@@ -1,14 +1,11 @@
 import Parser from 'rss-parser';
-import { Client } from 'discord.js';
 import config from 'config';
 
 const parser = new Parser();
 const channelId = config.get('channelIds.freegames');
 const feedUrl = config.get('urls.free');
 
-const client = new Client({ intents: [] });
-
-const free = async () => {
+export const free = async (client) => {
   try {
     const feed = await parser.parseURL(feedUrl);
     const channel = await client.channels.fetch(channelId);
@@ -23,7 +20,3 @@ const free = async () => {
     console.error('Error fetching RSS feed:', error);
   }
 };
-
-setInterval(free, 60 * 60 * 1000);
-
-export default free;
