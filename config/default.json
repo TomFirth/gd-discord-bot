@@ -7,7 +7,7 @@
   "schedule": {
     "challenge": "0 17 * * 5",
     "gamejam": "0 17 * * 5",
-    "theme": "0 9 * * 1"
+    "theme": "0 9 * * 5"
   },
   "urls": {
     "free": "https://steamcommunity.com/groups/freegamesfinders/rss/"
