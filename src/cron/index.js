@@ -1,9 +1,9 @@
-// import { challenge } from './challenge.js';
-// import { gameJam } from './gamejam.js';
 import { theme } from './theme.js';
+import { topPost } from './topPost.js';
+import { news } from './news.js';
 
 export const initializeScheduledEvents = (client) => {
-  // challenge(client);
-  // gameJam(client);
   theme(client);
+  topPost(client);
+  news(client);
 };

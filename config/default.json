@@ -2,12 +2,14 @@
   "channelIds": {
     "challenges": "1262740122185633842",
     "freegames": "1299312647451185213",
-    "general": "1262380130693808212"
+    "general": "1262380130693808212",
+    "unrelated": "1293544258162266122"
   },
   "schedule": {
-    "challenge": "0 17 * * 5",
-    "gamejam": "0 17 * * 5",
-    "theme": "0 9 * * 5"
+    "challenge": "0 17 * * 1",
+    "theme": "0 9 * * 5",
+    "topPost": "0 18 * * *",
+    "news": "0 20 * * *"
   },
   "urls": {
     "free": "https://steamcommunity.com/groups/freegamesfinders/rss/"
