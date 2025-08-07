@@ -1,3 +1,5 @@
+const { EmbedBuilder } = require('discord.js');
+
 import Parser from 'rss-parser';
 import config from 'config';
 import fs from 'fs/promises';
@@ -9,7 +11,7 @@ const feedUrl = config.get('urls.free');
 
 const postedItemsFile = path.resolve('./data/posted-items.json');
 
-async function loadPostedItems() {
+const loadPostedItems = async () => {
   try {
     const data = await fs.readFile(postedItemsFile, 'utf8');
     return new Set(JSON.parse(data));
@@ -19,7 +21,7 @@ async function loadPostedItems() {
   }
 }
 
-async function savePostedItems(set) {
+const savePostedItems = async (set) => {
   const arr = Array.from(set);
   await fs.writeFile(postedItemsFile, JSON.stringify(arr, null, 2));
 }
@@ -42,8 +44,21 @@ export const free = async (client) => {
 
     if (postedItems.has(uniqueId)) continue;
 
-    const messageContent = `${item.title}\n${item.link}`;
-    const sentMessage = await channel.send(messageContent);
+    const embed = new EmbedBuilder(item)
+      .setColor(0x0099FF)
+      .setTitle(item.title)
+      .setURL(item.link)
+      .setDescription(item.description);
+    const sentMessage = await channel.send({ embeds: [embed] });
+
+    try {
+      await sentMessage.crosspost();
+    } catch (err) {
+      console.warn('Failed to crosspost message:', err);
+    }
+
+    // const messageContent = `${item.title}\n${item.link}`;
+    // const sentMessage = await channel.send(messageContent);
 
     try {
       await sentMessage.react('👍');
