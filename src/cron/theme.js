@@ -34,10 +34,9 @@ export const runThemeNow = async (send) => {
     );
 
     const theme = response.data.choices?.[0]?.message?.content?.trim();
-    send(theme || 'Failed to generate a theme this week.');
+    send(theme);
   } catch (error) {
     console.error('OpenAI API error:', error.message);
-    send('Error fetching theme from OpenAI.');
   }
 };
 
