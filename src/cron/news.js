@@ -38,7 +38,7 @@ export const news = (client) => {
     if (validPosts.length === 0) return;
 
     const top = validPosts.reduce((a, b) => (a.score > b.score ? a : b));
-    const message = `🔥${top.subreddit}**\n**${top.title}**\n⬆️ ${top.score} upvotes\n🔗 ${top.url}`;
+    const message = `${top.subreddit}**\n**${top.title}**\n${top.score} upvotes\n${top.url}`;
 
     await channel.send(message);
   }).start();

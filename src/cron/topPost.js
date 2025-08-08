@@ -3,7 +3,7 @@ import { CronJob } from 'cron';
 import config from 'config';
 
 const subreddits = ['unity', 'Unity3D', 'Unity2D', 'godot', 'unrealengine'];
-const channelId = config.get('channelIds.unrelated');
+const channelId = config.get('channelIds.general');
 const schedule = config.get('schedule.topPost');
 
 const getTopPost = async (subreddit) => { 
@@ -38,7 +38,7 @@ export const topPost = (client) => {
     if (validPosts.length === 0) return;
 
     const top = validPosts.reduce((a, b) => (a.score > b.score ? a : b));
-    const message = `🔥${top.subreddit}**\n**${top.title}**\n⬆️ ${top.score} upvotes\n🔗 ${top.url}`;
+    const message = `${top.subreddit}**\n**${top.title}**\n${top.score} upvotes\n${top.url}`;
 
     await channel.send(message);
   }).start();
