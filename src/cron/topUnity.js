@@ -2,11 +2,11 @@ import axios from 'axios';
 import { CronJob } from 'cron';
 import config from 'config';
 
-const subreddits = ['godot', 'unrealengine'];
+const subreddits = ['unity', 'Unity3D', 'Unity2D'];
 const channelId = config.get('channelIds.general');
-const schedule = config.get('schedule.topPost');
+const schedule = config.get('schedule.topUnity');
 
-const getTopPost = async (subreddit) => { 
+const getTopUnity = async (subreddit) => { 
   try {
     const res = await axios.get(`https://www.reddit.com/r/${subreddit}/top.json`, {
       params: { limit: 1, t: 'day' },
@@ -28,12 +28,12 @@ const getTopPost = async (subreddit) => {
   }
 }
 
-export const topPost = (client) => {
+export const topUnity = (client) => {
   new CronJob(schedule, async () => {
     const channel = client.channels.cache.get(channelId);
     if (!channel) return;
 
-    const posts = await Promise.all(subreddits.map(getTopPost));
+    const posts = await Promise.all(subreddits.map(getTopUnity));
     const validPosts = posts.filter(Boolean);
     if (validPosts.length === 0) return;
 
