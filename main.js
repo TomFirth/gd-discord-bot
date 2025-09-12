@@ -2,7 +2,7 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// import { commandHandlers } from './src/commands';
+import { commandHandlers } from './src/commands';
 
 import { initializeScheduledEvents } from './src/cron/index.js';
 import { initializeStreams } from './src/stream/index.js';
@@ -23,7 +23,7 @@ client.once('ready', async () => {
   await initializeStreams(client);
 });
 
-/* client.on('interactionCreate', async (interaction) => {
+client.on('interactionCreate', async (interaction) => {
   if (!interaction.isCommand()) return;
 
   const { commandName } = interaction;
@@ -31,7 +31,7 @@ client.once('ready', async () => {
   if (commandName === 'comparegames') {
     await commandHandlers.compareGames(interaction);
   }
-}); */
+});
 
 client.on('messageCreate', (message) => {
   if (message.author.bot) return;
