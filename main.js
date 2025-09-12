@@ -2,8 +2,7 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { commandHandlers } from './src/commands';
-
+import { commandHandlers } from './src/commands/index.js';
 import { initializeScheduledEvents } from './src/cron/index.js';
 import { initializeStreams } from './src/stream/index.js';
 
