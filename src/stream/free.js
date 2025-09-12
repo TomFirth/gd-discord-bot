@@ -17,18 +17,18 @@ async function ensureDataFolder() {
 }
 
 // Load previously posted items
-const loadPostedItems = async (): Promise<Set<string>> => {
+const loadPostedItems = async () => {
   try {
     const data = await fs.readFile(postedItemsFile, 'utf8');
     return new Set(JSON.parse(data));
-  } catch (err: any) {
+  } catch (err) {
     if (err.code === 'ENOENT') return new Set();
     throw err;
   }
 };
 
 // Save posted items
-const savePostedItems = async (set: Set<string>) => {
+const savePostedItems = async (set) => {
   const arr = Array.from(set);
   await fs.writeFile(postedItemsFile, JSON.stringify(arr, null, 2));
 };
