@@ -1,5 +1,5 @@
 import { REST, Routes } from 'discord.js';
-import { command as compareGamesCommand, compareGames } from './steam';
+import { command as compareGamesCommand, compareGames } from './steam.js';
 import config from 'config';
 
 const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN);

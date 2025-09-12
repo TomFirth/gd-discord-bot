@@ -1,7 +1,7 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const axios = require('axios');
+import { SlashCommandBuilder } from '@discordjs/builders';
+import axios from 'axios';
 
-const command = new SlashCommandBuilder()
+export const command = new SlashCommandBuilder()
   .setName('steamcompare')
   .setDescription('Compares games between two Steam users')
   .addStringOption(option =>
@@ -15,7 +15,7 @@ const command = new SlashCommandBuilder()
       .setRequired(true)
   );
 
-async function compareGames(interaction) {
+export async function compareGames(interaction) {
   const yourSteamId = interaction.options.getString('your_steam_id');
   const otherSteamId = interaction.options.getString('other_steam_id');
 
@@ -56,5 +56,3 @@ async function compareGames(interaction) {
     await interaction.reply(`No common games found between you and **${otherSteamId}**.`);
   }
 }
-
-module.exports = { command, compareGames };
