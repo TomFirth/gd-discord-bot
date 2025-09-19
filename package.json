@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "node main.js",
-    "dev": "nodemon main.js NODE_ENV=development"
+    "dev": "nodemon main.js NODE_ENV=development",
+    "dc": "node src/commands/deploy-commands.js"
   },
   "keywords": [],
   "author": "",
