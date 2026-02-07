@@ -4,8 +4,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { guildId } from '../../config/default.json';
 
-const guildId = config.get('guildId');
-
 const commands = [];
 // Grab all the command folders from the commands directory you created earlier
 const foldersPath = path.join(__dirname, 'commands');
