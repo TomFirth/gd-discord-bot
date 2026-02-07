@@ -2,7 +2,7 @@ import { Routes } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import fs from 'node:fs';
 import path from 'node:path';
-import { guildId } from '../../config/default.json';
+import { guildId } from '../../config/default.json' with { type: "json" };
 
 const commands = [];
 // Grab all the command folders from the commands directory you created earlier
