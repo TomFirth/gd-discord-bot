@@ -21,11 +21,10 @@ const commandFiles = fs
 	.readdirSync(commandsPath)
 	.filter(file =>
 		(file.endsWith('.js') || file.endsWith('.ts')) &&
-		file !== 'deploy-commands.js'
+		(file !== 'deploy-commands.js' || file !== 'index.js')
 	);
 
 for (const file of commandFiles) {
-	if (file == 'index.js ') continue;
 	const filePath = path.join(commandsPath, file);
 	const command = await import(`file://${filePath}`);
 
