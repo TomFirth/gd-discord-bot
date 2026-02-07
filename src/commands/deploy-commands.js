@@ -3,7 +3,7 @@ import { REST } from '@discordjs/rest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import config from '../../config/default.json' assert { type: 'json' };
+import config from '../../config/default.json' with { type: 'json' };
 
 // --------------------------------------------------
 // ESM replacement for __dirname
