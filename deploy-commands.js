@@ -25,6 +25,7 @@ const commandFiles = fs
 	);
 
 for (const file of commandFiles) {
+	if (file == 'index.js ') continue;
 	const filePath = path.join(commandsPath, file);
 	const command = await import(`file://${filePath}`);
 
