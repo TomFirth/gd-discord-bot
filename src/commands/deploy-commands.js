@@ -1,7 +1,7 @@
-const { Routes } = require('discord.js');
-const { REST } = require('@discordjs/rest');
-const fs = require('node:fs');
-const path = require('node:path');
+import { Routes } from 'discord.js';
+import { REST } from '@discordjs/rest';
+import fs from 'node:fs';
+import path from 'node:path';
 import config from 'config';
 
 const guildId = config.get('guildId');
