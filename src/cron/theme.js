@@ -1,39 +1,29 @@
 import { CronJob } from 'cron';
 import config from 'config';
-import axios from 'axios';
 import dotenv from 'dotenv';
+import { GoogleGenAI } from "@google/genai";
 
 dotenv.config();
 
 const channelId = config.get('channelIds.general');
 const schedule = config.get('schedule.theme');
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const MODEL_NAME = 'gemini-3-flash-preview';
 
 export const runThemeNow = async (send) => {
   try {
-    const response = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
-      {
-        model: 'gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'user',
-            content:
-              'Give me one creative game jam theme. Respond with only the theme text, no explanation or punctuation.',
-          },
-        ],
-        temperature: 0.7,
-        max_tokens: 30,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-        },
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+    
+    const response = await ai.models.generateContent({
+      model: MODEL_NAME,
+      contents: "Give me one creative game jam theme. Respond with only the theme text, no explanation or punctuation.",
+      config: {
+        temperature: 0.8,
+        topP: 0.95,
+        topK: 40,
       }
-    );
+    });
 
-    const theme = response.data.choices?.[0]?.message?.content?.trim();
+    const theme = response.text?.trim() || "Evolution";
     send(theme);
   } catch (error) {
     console.error('OpenAI API error:', error.message);
