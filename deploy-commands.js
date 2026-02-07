@@ -3,7 +3,7 @@ import { REST } from '@discordjs/rest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import config from '../../config/default.json' with { type: 'json' };
+import config from './config/default.json' with { type: 'json' };
 
 // --------------------------------------------------
 // ESM replacement for __dirname
@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 // Load commands
 // --------------------------------------------------
 const commands = [];
-const foldersPath = path.resolve(__dirname);
+const foldersPath = path.resolve(__dirname + '/src/commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
