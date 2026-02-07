@@ -18,7 +18,7 @@
     "@google/genai": "^1.40.0",
     "axios": "^1.11.0",
     "cron": "^4.3.3",
-    "discord.js": "^13.17.1",
+    "discord.js": "^14.25.1",
     "rss-parser": "^3.13.0"
   },
   "devDependencies": {
