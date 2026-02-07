@@ -2,7 +2,7 @@ import { Routes } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import fs from 'node:fs';
 import path from 'node:path';
-import config from 'config';
+import { guildId } from '../../config/default.json';
 
 const guildId = config.get('guildId');
 
