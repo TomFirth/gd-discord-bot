@@ -12,31 +12,28 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // --------------------------------------------------
-// Load commands
+// Load commands (flat directory)
 // --------------------------------------------------
 const commands = [];
-const foldersPath = path.resolve(__dirname + '/src/commands');
-const commandFolders = fs.readdirSync(foldersPath);
+const commandsPath = path.join(__dirname, 'src', 'commands');
 
-for (const folder of commandFolders) {
-	const commandsPath = path.join(foldersPath, folder);
-	const commandFiles = fs
-		.readdirSync(commandsPath)
-		.filter(file => file.endsWith('.js'));
+const commandFiles = fs
+	.readdirSync(commandsPath)
+	.filter(file =>
+		(file.endsWith('.js') || file.endsWith('.ts')) &&
+		file !== 'deploy-commands.js'
+	);
 
-	for (const file of commandFiles) {
-		const filePath = path.join(commandsPath, file);
+for (const file of commandFiles) {
+	const filePath = path.join(commandsPath, file);
+	const command = await import(`file://${filePath}`);
 
-		// 🔥 ESM dynamic import
-		const command = await import(`file://${filePath}`);
-
-		if (command.default?.data && command.default?.execute) {
-			commands.push(command.default.data.toJSON());
-		} else {
-			console.warn(
-				`[WARNING] The command at ${filePath} is missing "data" or "execute".`
-			);
-		}
+	if (command.default?.data && command.default?.execute) {
+		commands.push(command.default.data.toJSON());
+	} else {
+		console.warn(
+			`[WARNING] The command at ${filePath} is missing "data" or "execute".`
+		);
 	}
 }
 
