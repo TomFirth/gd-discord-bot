@@ -14,10 +14,11 @@
   "description": "",
   "dependencies": {
     "@discordjs/builders": "^1.11.2",
-    "@discordjs/rest": "^2.5.1",
+    "@discordjs/rest": "^0.4.1",
+    "@google/genai": "^1.40.0",
     "axios": "^1.11.0",
     "cron": "^4.3.3",
-    "discord.js": "^14.21.0",
+    "discord.js": "^13.17.1",
     "rss-parser": "^3.13.0"
   },
   "devDependencies": {
