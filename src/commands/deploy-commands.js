@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 // Load commands
 // --------------------------------------------------
 const commands = [];
-const foldersPath = path.join(__dirname, 'commands');
+const foldersPath = path.resolve(__dirname);
 const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
