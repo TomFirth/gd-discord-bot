@@ -34,4 +34,8 @@ client.on('interactionCreate', async (interaction) => {
 
 client.on('messageCreate', (message) => {
   if (message.author.bot) return;
+
+  if (message.content.startsWith('!remindme ')) {
+    message.reply('Remind yourself.');
+  }
 });
