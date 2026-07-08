@@ -1,9 +1,12 @@
+import dotenv from 'dotenv';
 import { Routes } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import config from './config/default.json' with { type: 'json' };
+
+dotenv.config();
 
 // --------------------------------------------------
 // ESM replacement for __dirname
@@ -21,7 +24,7 @@ const commandFiles = fs
 	.readdirSync(commandsPath)
 	.filter(file =>
 		(file.endsWith('.js') || file.endsWith('.ts')) &&
-		(file !== 'deploy-commands.js' || file !== 'index.js')
+		(file !== 'deploy-commands.js' && file !== 'index.js')
 	);
 
 for (const file of commandFiles) {
