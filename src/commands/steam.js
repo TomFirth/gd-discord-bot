@@ -77,14 +77,20 @@ const fetchAppDetails = async (appid) => {
   }
 };
 
+const MULTIPLAYER_CATEGORY_IDS = new Set([1, 9, 38, 44]);
+const MULTIPLAYER_CATEGORY_RE = /multi[- ]player|multiplayer|co[- ]op|online co-op|online pvp|pvp/i;
+
 const isMultiplayerApp = (categories) => {
-  return categories.some((category) => /multi[- ]player|multiplayer|co[- ]op/i.test(category.description));
+  if (!Array.isArray(categories)) return false;
+  return categories.some((category) => {
+    if (MULTIPLAYER_CATEGORY_IDS.has(category.id)) return true;
+    return MULTIPLAYER_CATEGORY_RE.test(category.description);
+  });
 };
 
 const getCommonMultiplayerGames = async (commonGames) => {
   const multiplayerGames = [];
-  const checkGames = commonGames.slice(0, 20);
-  const results = await Promise.all(checkGames.map(async (game) => {
+  const results = await Promise.all(commonGames.map(async (game) => {
     const categories = await fetchAppDetails(game.appid);
     return isMultiplayerApp(categories) ? game : null;
   }));
