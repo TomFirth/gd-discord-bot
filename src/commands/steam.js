@@ -95,25 +95,27 @@ const getCommonMultiplayerGames = async (commonGames) => {
 };
 
 export async function compareGames(interaction) {
+  await interaction.deferReply();
+
   const yourSteamId = interaction.options.getString('your_steam_id');
   const otherSteamId = interaction.options.getString('other_steam_id');
 
   if (!yourSteamId || !otherSteamId) {
-    return interaction.reply('Both Steam IDs are required.');
+    return interaction.editReply('Both Steam IDs are required.');
   }
 
   const resolvedYourSteamId = await resolveSteamId(yourSteamId);
   const resolvedOtherSteamId = await resolveSteamId(otherSteamId);
 
   if (!resolvedYourSteamId || !resolvedOtherSteamId) {
-    return interaction.reply('Could not resolve one or both Steam IDs. Use a valid Steam64 ID or vanity URL name.');
+    return interaction.editReply('Could not resolve one or both Steam IDs. Use a valid Steam64 ID or vanity URL name.');
   }
 
   const yourGames = await fetchOwnedGames(resolvedYourSteamId);
   const otherGames = await fetchOwnedGames(resolvedOtherSteamId);
 
   if (yourGames.length === 0 || otherGames.length === 0) {
-    return interaction.reply('Could not retrieve one or both game libraries. The Steam profile may be private or invalid.');
+    return interaction.editReply('Could not retrieve one or both game libraries. The Steam profile may be private or invalid.');
   }
 
   const commonGames = yourGames.filter((yourGame) =>
@@ -121,13 +123,13 @@ export async function compareGames(interaction) {
   );
 
   if (commonGames.length === 0) {
-    return interaction.reply(`No common games found between you and **${otherSteamId}**.`);
+    return interaction.editReply(`No common games found between you and **${otherSteamId}**.`);
   }
 
   const multiplayerGames = await getCommonMultiplayerGames(commonGames);
 
   if (multiplayerGames.length === 0) {
-    return interaction.reply(`No common multiplayer games found between you and **${otherSteamId}**.`);
+    return interaction.editReply(`No common multiplayer games found between you and **${otherSteamId}**.`);
   }
 
   const remainingCount = commonGames.length - multiplayerGames.length;
@@ -140,7 +142,7 @@ export async function compareGames(interaction) {
     .setDescription(`${description}${remainingCount > 0 ? `\n...and ${remainingCount} more common multiplayer game${remainingCount === 1 ? '' : 's'}` : ''}`)
     .setFooter({ text: `${multiplayerGames.length} common multiplayer game${multiplayerGames.length === 1 ? '' : 's'}` });
 
-  return interaction.reply({ embeds: [embed] });
+  return interaction.editReply({ embeds: [embed] });
 }
 
 export default {
