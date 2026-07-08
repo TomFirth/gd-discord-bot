@@ -79,8 +79,8 @@ const fetchAppDetails = async (appid) => {
   }
 };
 
-const MULTIPLAYER_CATEGORY_IDS = new Set([1, 9, 38, 44]);
-const MULTIPLAYER_CATEGORY_RE = /multi[- ]player|multiplayer|co[- ]op|online co-op|online pvp|pvp/i;
+const MULTIPLAYER_CATEGORY_IDS = new Set([1, 9, 38, 44, 49, 36, 47, 27, 48]);
+const MULTIPLAYER_CATEGORY_RE = /multi[- ]player|multiplayer|co[- ]op|online co-op|online pvp|lan pvp|pvp|cross-platform/i;
 
 const isMultiplayerApp = (categories) => {
   if (!Array.isArray(categories)) return false;
