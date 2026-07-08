@@ -132,14 +132,13 @@ export async function compareGames(interaction) {
     return interaction.editReply(`No common multiplayer games found between you and **${otherSteamId}**.`);
   }
 
-  const remainingCount = commonGames.length - multiplayerGames.length;
   const description = multiplayerGames
     .map((game, index) => `${index + 1}. ${game.name}`)
     .join('\n');
 
   const embed = new EmbedBuilder()
     .setTitle(`Common multiplayer games with ${otherSteamId}`)
-    .setDescription(`${description}${remainingCount > 0 ? `\n...and ${remainingCount} more common multiplayer game${remainingCount === 1 ? '' : 's'}` : ''}`)
+    .setDescription(description)
     .setFooter({ text: `${multiplayerGames.length} common multiplayer game${multiplayerGames.length === 1 ? '' : 's'}` });
 
   return interaction.editReply({ embeds: [embed] });

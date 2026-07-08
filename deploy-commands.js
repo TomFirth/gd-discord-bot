@@ -12,12 +12,6 @@ const __dirname = path.dirname(__filename);
 const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config/default.json'), 'utf8'));
 
 // --------------------------------------------------
-// ESM replacement for __dirname
-// --------------------------------------------------
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// --------------------------------------------------
 // Load commands (flat directory)
 // --------------------------------------------------
 const commands = [];
