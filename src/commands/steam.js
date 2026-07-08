@@ -83,65 +83,77 @@ const isMultiplayerApp = (categories) => {
 
 const getCommonMultiplayerGames = async (commonGames) => {
   const multiplayerGames = [];
-  for (const game of commonGames) {
-    if (multiplayerGames.length >= 12) break;
-
+  const checkGames = commonGames.slice(0, 20);
+  const results = await Promise.all(checkGames.map(async (game) => {
     const categories = await fetchAppDetails(game.appid);
-    if (isMultiplayerApp(categories)) {
+    return isMultiplayerApp(categories) ? game : null;
+  }));
+
+  for (const game of results) {
+    if (game && multiplayerGames.length < 12) {
       multiplayerGames.push(game);
     }
   }
+
   return multiplayerGames;
 };
 
 export async function compareGames(interaction) {
   await interaction.deferReply();
 
-  const yourSteamId = interaction.options.getString('your_steam_id');
-  const otherSteamId = interaction.options.getString('other_steam_id');
+  try {
+    const yourSteamId = interaction.options.getString('your_steam_id');
+    const otherSteamId = interaction.options.getString('other_steam_id');
 
-  if (!yourSteamId || !otherSteamId) {
-    return interaction.editReply('Both Steam IDs are required.');
+    if (!yourSteamId || !otherSteamId) {
+      return interaction.editReply('Both Steam IDs are required.');
+    }
+
+    const resolvedYourSteamId = await resolveSteamId(yourSteamId);
+    const resolvedOtherSteamId = await resolveSteamId(otherSteamId);
+
+    if (!resolvedYourSteamId || !resolvedOtherSteamId) {
+      return interaction.editReply('Could not resolve one or both Steam IDs. Use a valid Steam64 ID or vanity URL name.');
+    }
+
+    const yourGames = await fetchOwnedGames(resolvedYourSteamId);
+    const otherGames = await fetchOwnedGames(resolvedOtherSteamId);
+
+    if (yourGames.length === 0 || otherGames.length === 0) {
+      return interaction.editReply('Could not retrieve one or both game libraries. The Steam profile may be private or invalid.');
+    }
+
+    const commonGames = yourGames.filter((yourGame) =>
+      otherGames.some((otherGame) => otherGame.appid === yourGame.appid)
+    );
+
+    if (commonGames.length === 0) {
+      return interaction.editReply(`No common games found between you and **${otherSteamId}**.`);
+    }
+
+    const multiplayerGames = await getCommonMultiplayerGames(commonGames);
+
+    if (multiplayerGames.length === 0) {
+      return interaction.editReply(`No common multiplayer games found between you and **${otherSteamId}**.`);
+    }
+
+    const description = multiplayerGames
+      .map((game, index) => `${index + 1}. ${game.name}`)
+      .join('\n');
+
+    const embed = new EmbedBuilder()
+      .setTitle(`Common multiplayer games with ${otherSteamId}`)
+      .setDescription(description)
+      .setFooter({ text: `${multiplayerGames.length} common multiplayer game${multiplayerGames.length === 1 ? '' : 's'}` });
+
+    return interaction.editReply({ embeds: [embed] });
+  } catch (error) {
+    console.error('Steam compare command error:', error);
+    if (interaction.deferred || interaction.replied) {
+      return interaction.editReply('An error occurred while comparing Steam libraries.');
+    }
+    return interaction.reply({ content: 'An error occurred while comparing Steam libraries.', ephemeral: true });
   }
-
-  const resolvedYourSteamId = await resolveSteamId(yourSteamId);
-  const resolvedOtherSteamId = await resolveSteamId(otherSteamId);
-
-  if (!resolvedYourSteamId || !resolvedOtherSteamId) {
-    return interaction.editReply('Could not resolve one or both Steam IDs. Use a valid Steam64 ID or vanity URL name.');
-  }
-
-  const yourGames = await fetchOwnedGames(resolvedYourSteamId);
-  const otherGames = await fetchOwnedGames(resolvedOtherSteamId);
-
-  if (yourGames.length === 0 || otherGames.length === 0) {
-    return interaction.editReply('Could not retrieve one or both game libraries. The Steam profile may be private or invalid.');
-  }
-
-  const commonGames = yourGames.filter((yourGame) =>
-    otherGames.some((otherGame) => otherGame.appid === yourGame.appid)
-  );
-
-  if (commonGames.length === 0) {
-    return interaction.editReply(`No common games found between you and **${otherSteamId}**.`);
-  }
-
-  const multiplayerGames = await getCommonMultiplayerGames(commonGames);
-
-  if (multiplayerGames.length === 0) {
-    return interaction.editReply(`No common multiplayer games found between you and **${otherSteamId}**.`);
-  }
-
-  const description = multiplayerGames
-    .map((game, index) => `${index + 1}. ${game.name}`)
-    .join('\n');
-
-  const embed = new EmbedBuilder()
-    .setTitle(`Common multiplayer games with ${otherSteamId}`)
-    .setDescription(description)
-    .setFooter({ text: `${multiplayerGames.length} common multiplayer game${multiplayerGames.length === 1 ? '' : 's'}` });
-
-  return interaction.editReply({ embeds: [embed] });
 }
 
 export default {

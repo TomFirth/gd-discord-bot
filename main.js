@@ -36,7 +36,7 @@ client.on('interactionCreate', async (interaction) => {
   if (now - last < COMMAND_COOLDOWN_MS) {
     const remaining = Math.ceil((COMMAND_COOLDOWN_MS - (now - last)) / 1000);
     return interaction.reply({
-      content: `Please wait ${remaining} second${remaining === 1 ? '' : 's'} before using \\`/${commandName}\\` again.`,
+      content: `Please wait ${remaining} second${remaining === 1 ? '' : 's'} before using \`/${commandName}\` again.`,
       ephemeral: true,
     });
   }
@@ -48,8 +48,17 @@ client.on('interactionCreate', async (interaction) => {
     }
   }, COMMAND_COOLDOWN_MS);
 
-  if (commandName === 'steamcompare') {
-    await commandHandlers.compareGames(interaction);
+  try {
+    if (commandName === 'steamcompare') {
+      await commandHandlers.compareGames(interaction);
+    }
+  } catch (error) {
+    console.error('Command execution error:', error);
+    if (interaction.deferred || interaction.replied) {
+      await interaction.editReply({ content: 'An internal error occurred while running this command.' });
+    } else {
+      await interaction.reply({ content: 'An internal error occurred while running this command.', ephemeral: true });
+    }
   }
 });
 
