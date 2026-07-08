@@ -49,6 +49,8 @@ const fetchOwnedGames = async (steamId) => {
         key: process.env.STEAM_API_KEY,
         steamid: steamId,
         include_appinfo: true,
+        include_played_free_games: true,
+        include_free_subs: true,
         format: 'json',
       },
     });
