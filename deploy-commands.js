@@ -24,8 +24,13 @@ const commandFiles = fs
 	.readdirSync(commandsPath)
 	.filter(file =>
 		(file.endsWith('.js') || file.endsWith('.ts')) &&
-		(file !== 'deploy-commands.js' && file !== 'index.js')
+		(file !== 'deploy-commands.js' && file !== 'index.js' && file !== 'runThemeNow.js')
 	);
+
+const token = process.env.BOT_TOKEN || process.env.TOKEN;
+if (!token) {
+  throw new Error('BOT_TOKEN or TOKEN must be set to register commands.');
+}
 
 for (const file of commandFiles) {
 	const filePath = path.join(commandsPath, file);
@@ -43,7 +48,7 @@ for (const file of commandFiles) {
 // --------------------------------------------------
 // Deploy commands
 // --------------------------------------------------
-const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+const rest = new REST({ version: '10' }).setToken(token);
 
 (async () => {
 	try {
