@@ -27,7 +27,7 @@ client.on('interactionCreate', async (interaction) => {
 
   const { commandName } = interaction;
 
-  if (commandName === 'comparegames') {
+  if (commandName === 'steamcompare') {
     await commandHandlers.compareGames(interaction);
   }
 });

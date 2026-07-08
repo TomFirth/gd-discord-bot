@@ -7,10 +7,29 @@
   },
   "schedule": {
     "challenge": "0 17 * * 1",
-    "theme": "0 9 * * 5",
-    "topPost": "0 18 * * *",
-    "topUnity": "59 23 * * *",
-    "news": "0 20 * * *"
+    "theme": "0 9 * * 5"
+  },
+  "reddit": {
+    "feeds": {
+      "topPost": {
+        "name": "Game dev top posts",
+        "schedule": "0 18 * * *",
+        "channel": "general",
+        "subreddits": ["godot", "unrealengine"]
+      },
+      "topUnity": {
+        "name": "Unity top posts",
+        "schedule": "59 23 * * *",
+        "channel": "general",
+        "subreddits": ["unity", "Unity3D", "Unity2D"]
+      },
+      "news": {
+        "name": "Game news top posts",
+        "schedule": "0 20 * * *",
+        "channel": "unrelated",
+        "subreddits": ["gamedev", "IndieGaming", "indiegames"]
+      }
+    }
   },
   "urls": {
     "free": "https://steamcommunity.com/groups/freegamesfinders/rss/"

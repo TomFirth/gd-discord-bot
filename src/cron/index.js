@@ -1,11 +1,7 @@
 import { theme } from './theme.js';
-import { topPost } from './topPost.js';
-import { topUnity } from './topUnity.js';
-import { news } from './news.js';
+import { startRedditFeeds } from './reddit.js';
 
 export const initializeScheduledEvents = (client) => {
   theme(client);
-  topPost(client);
-  topUnity(client);
-  news(client);
+  startRedditFeeds(client);
 };
