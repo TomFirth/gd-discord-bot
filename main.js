@@ -22,10 +22,31 @@ client.once('ready', async () => {
   await initializeStreams(client);
 });
 
+const commandCooldowns = new Map();
+const COMMAND_COOLDOWN_MS = 10000;
+
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isCommand()) return;
 
-  const { commandName } = interaction;
+  const { commandName, user } = interaction;
+  const key = `${user.id}:${commandName}`;
+  const now = Date.now();
+  const last = commandCooldowns.get(key) ?? 0;
+
+  if (now - last < COMMAND_COOLDOWN_MS) {
+    const remaining = Math.ceil((COMMAND_COOLDOWN_MS - (now - last)) / 1000);
+    return interaction.reply({
+      content: `Please wait ${remaining} second${remaining === 1 ? '' : 's'} before using \\`/${commandName}\\` again.`,
+      ephemeral: true,
+    });
+  }
+
+  commandCooldowns.set(key, now);
+  setTimeout(() => {
+    if (commandCooldowns.get(key) === now) {
+      commandCooldowns.delete(key);
+    }
+  }, COMMAND_COOLDOWN_MS);
 
   if (commandName === 'steamcompare') {
     await commandHandlers.compareGames(interaction);

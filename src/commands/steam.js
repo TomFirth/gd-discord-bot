@@ -1,4 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
+import { EmbedBuilder } from 'discord.js';
 import axios from 'axios';
 
 const command = new SlashCommandBuilder()
@@ -58,6 +59,41 @@ const fetchOwnedGames = async (steamId) => {
   }
 };
 
+const fetchAppDetails = async (appid) => {
+  try {
+    const response = await axios.get('https://store.steampowered.com/api/appdetails', {
+      params: {
+        appids: appid,
+        cc: 'us',
+        l: 'en',
+        filters: 'categories',
+      },
+    });
+
+    return response.data?.[appid]?.data?.categories || [];
+  } catch (error) {
+    console.error(`Error fetching Steam app details for ${appid}:`, error.message);
+    return [];
+  }
+};
+
+const isMultiplayerApp = (categories) => {
+  return categories.some((category) => /multi[- ]player|multiplayer|co[- ]op/i.test(category.description));
+};
+
+const getCommonMultiplayerGames = async (commonGames) => {
+  const multiplayerGames = [];
+  for (const game of commonGames) {
+    if (multiplayerGames.length >= 12) break;
+
+    const categories = await fetchAppDetails(game.appid);
+    if (isMultiplayerApp(categories)) {
+      multiplayerGames.push(game);
+    }
+  }
+  return multiplayerGames;
+};
+
 export async function compareGames(interaction) {
   const yourSteamId = interaction.options.getString('your_steam_id');
   const otherSteamId = interaction.options.getString('other_steam_id');
@@ -76,20 +112,35 @@ export async function compareGames(interaction) {
   const yourGames = await fetchOwnedGames(resolvedYourSteamId);
   const otherGames = await fetchOwnedGames(resolvedOtherSteamId);
 
-  const yourGameTitles = yourGames.map((game) => game.name);
-  const otherGameTitles = otherGames.map((game) => game.name);
-
-  if (yourGameTitles.length === 0 || otherGameTitles.length === 0) {
+  if (yourGames.length === 0 || otherGames.length === 0) {
     return interaction.reply('Could not retrieve one or both game libraries. The Steam profile may be private or invalid.');
   }
 
-  const commonGames = yourGameTitles.filter((game) => otherGameTitles.includes(game));
+  const commonGames = yourGames.filter((yourGame) =>
+    otherGames.some((otherGame) => otherGame.appid === yourGame.appid)
+  );
 
-  if (commonGames.length > 0) {
-    await interaction.reply(`Common games between you and **${otherSteamId}**:\n${commonGames.join(', ')}`);
-  } else {
-    await interaction.reply(`No common games found between you and **${otherSteamId}**.`);
+  if (commonGames.length === 0) {
+    return interaction.reply(`No common games found between you and **${otherSteamId}**.`);
   }
+
+  const multiplayerGames = await getCommonMultiplayerGames(commonGames);
+
+  if (multiplayerGames.length === 0) {
+    return interaction.reply(`No common multiplayer games found between you and **${otherSteamId}**.`);
+  }
+
+  const remainingCount = commonGames.length - multiplayerGames.length;
+  const description = multiplayerGames
+    .map((game, index) => `${index + 1}. ${game.name}`)
+    .join('\n');
+
+  const embed = new EmbedBuilder()
+    .setTitle(`Common multiplayer games with ${otherSteamId}`)
+    .setDescription(`${description}${remainingCount > 0 ? `\n...and ${remainingCount} more common multiplayer game${remainingCount === 1 ? '' : 's'}` : ''}`)
+    .setFooter({ text: `${multiplayerGames.length} common multiplayer game${multiplayerGames.length === 1 ? '' : 's'}` });
+
+  return interaction.reply({ embeds: [embed] });
 }
 
 export default {
