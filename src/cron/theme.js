@@ -48,7 +48,6 @@ const fetchFeatherlessTheme = async () => {
       headers: {
         Authorization: `Bearer ${FEATHERLESS_API_KEY}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://your-app.example.com',
         'X-Title': 'GD Bot Theme Generator',
       },
     }

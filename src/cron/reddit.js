@@ -43,7 +43,7 @@ export const startRedditFeeds = (client) => {
   const feeds = config.get('reddit.feeds');
 
   Object.values(feeds).forEach((feedConfig) => {
-    const { schedule, channel, subreddits, name } = feedConfig;
+    const { schedule, channel, subreddits } = feedConfig;
     const channelId = config.get(`channelIds.${channel}`);
 
     new CronJob(schedule, async () => {
@@ -54,8 +54,7 @@ export const startRedditFeeds = (client) => {
       const validPosts = posts.filter(Boolean);
       if (validPosts.length === 0) return;
 
-      const header = name ? `**${name}**\n\n` : '';
-      const message = header + validPosts.map(formatPost).join('\n\n');
+      const message = validPosts.map(formatPost).join('\n\n');
       await discordChannel.send(message);
     }).start();
   });

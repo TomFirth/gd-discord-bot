@@ -7,24 +7,26 @@
   },
   "schedule": {
     "challenge": "0 17 * * 1",
-    "theme": "0 9 * * 5"
+    "theme": "0 9 * * 5",
+    "devtip": "0 12 * * 3",
+    "moodboard": "0 12 * * 4",
+    "showcase": "0 17 * * 5",
+    "audio": "0 11 * * 5",
+    "story": "0 13 * * 5"
   },
   "reddit": {
     "feeds": {
       "topPost": {
-        "name": "Game dev top posts",
         "schedule": "0 18 * * *",
         "channel": "general",
         "subreddits": ["godot", "unrealengine"]
       },
       "topUnity": {
-        "name": "Unity top posts",
         "schedule": "59 23 * * *",
         "channel": "general",
         "subreddits": ["unity", "Unity3D", "Unity2D"]
       },
       "news": {
-        "name": "Game news top posts",
         "schedule": "0 20 * * *",
         "channel": "unrelated",
         "subreddits": ["gamedev", "IndieGaming", "indiegames"]

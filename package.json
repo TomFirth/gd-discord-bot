@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node main.js",
     "dev": "nodemon main.js NODE_ENV=development",
-    "dc": "node src/commands/deploy-commands.js"
+    "dc": "node deploy-commands.js"
   },
   "keywords": [],
   "author": "",
