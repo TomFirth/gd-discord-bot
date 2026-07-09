@@ -80,13 +80,20 @@ const fetchAppDetails = async (appid) => {
 };
 
 const MULTIPLAYER_CATEGORY_IDS = new Set([1, 9, 38, 44, 49, 36, 47, 27, 48]);
-const MULTIPLAYER_CATEGORY_RE = /multi[- ]player|multiplayer|co[- ]op|online co-op|online pvp|lan pvp|pvp|cross-platform/i;
+const REQUIRED_MULTIPLAYER_TAGS = [
+  /(^|\W)multiplayer(\W|$)/i,
+  /(^|\W)co-?op(\W|$)/i,
+  /(^|\W)online co-?op(\W|$)/i,
+  /(^|\W)pvp(\W|$)/i,
+  /(^|\W)online pvp(\W|$)/i,
+  /(^|\W)cross[- ]platform multiplayer(\W|$)/i,
+];
 
 const isMultiplayerApp = (categories) => {
   if (!Array.isArray(categories)) return false;
   return categories.some((category) => {
     if (MULTIPLAYER_CATEGORY_IDS.has(category.id)) return true;
-    return MULTIPLAYER_CATEGORY_RE.test(category.description);
+    return REQUIRED_MULTIPLAYER_TAGS.some((regex) => regex.test(category.description));
   });
 };
 
