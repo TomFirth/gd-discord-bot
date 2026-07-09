@@ -105,7 +105,7 @@ const getCommonMultiplayerGames = async (commonGames) => {
   }));
 
   for (const game of results) {
-    if (game && multiplayerGames.length < 12) {
+    if (game) {
       multiplayerGames.push(game);
     }
   }
@@ -151,6 +151,8 @@ export async function compareGames(interaction) {
     if (multiplayerGames.length === 0) {
       return interaction.editReply(`No common multiplayer games found between you and **${otherSteamId}**.`);
     }
+
+    multiplayerGames.sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }));
 
     const description = multiplayerGames
       .map((game, index) => `${index + 1}. ${game.name}`)
