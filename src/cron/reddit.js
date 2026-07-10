@@ -1,7 +1,16 @@
 import axios from 'axios';
 import Parser from 'rss-parser';
 import { CronJob } from 'cron';
-import config from 'config';
+import dotenv from 'dotenv';
+import { withRetry } from '../utils/retry.js';
+
+dotenv.config();
+
+if (process.env.NODE_APP_INSTANCE === '0') {
+  delete process.env.NODE_APP_INSTANCE;
+}
+
+const { default: config } = await import('config');
 
 const parser = new Parser();
 const USER_AGENT = 'DiscordBot/1.0 (by u/yourusername)';
@@ -11,14 +20,14 @@ const getRedditRssUrl = (subreddit) =>
 
 export const fetchRedditTopItem = async (subreddit) => {
   try {
-    const res = await axios.get(getRedditRssUrl(subreddit), {
+    const res = await withRetry(() => axios.get(getRedditRssUrl(subreddit), {
       headers: {
         'User-Agent': USER_AGENT,
         Accept: 'application/rss+xml',
       },
       responseType: 'text',
       timeout: 15000,
-    });
+    }), { retries: 3, baseDelayMs: 500 });
 
     const feed = await parser.parseString(res.data);
     const item = feed.items?.[0];

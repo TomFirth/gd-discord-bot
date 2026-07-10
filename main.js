@@ -16,7 +16,7 @@ const client = new Client({
 
 client.login(process.env.BOT_TOKEN);
 
-client.once('ready', async () => {
+client.once('clientReady', async () => {
   console.log(`Bot started at ${new Date()}`);
   await initializeScheduledEvents(client);
   await initializeStreams(client);

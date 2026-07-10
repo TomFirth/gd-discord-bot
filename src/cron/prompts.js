@@ -1,10 +1,19 @@
 import { CronJob } from 'cron';
-import config from 'config';
+import dotenv from 'dotenv';
 import axios from 'axios';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { withRetry } from '../utils/retry.js';
+
+dotenv.config();
+
+if (process.env.NODE_APP_INSTANCE === '0') {
+  delete process.env.NODE_APP_INSTANCE;
+}
+
+const { default: config } = await import('config');
 
 const channelId = config.get('channelIds.general');
 const FEATHERLESS_API_KEY = process.env.FEATHERLESS_API_KEY;
@@ -25,7 +34,7 @@ const generatePromptText = async (type) => {
   };
 
   try {
-    const response = await axios.post(
+    const response = await withRetry(() => axios.post(
       `${FEATHERLESS_BASE_URL}/chat/completions`,
       {
         model: FEATHERLESS_MODEL,
@@ -42,7 +51,7 @@ const generatePromptText = async (type) => {
           'X-Title': 'GD Bot Prompt Generator',
         },
       }
-    );
+    ), { retries: 3, baseDelayMs: 400 });
 
     const generated = response.data?.choices?.[0]?.message?.content;
     return cleanPromptText(generated) || getFallbackPrompt(type);

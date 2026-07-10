@@ -1,5 +1,13 @@
 import { CronJob } from 'cron';
-import config from 'config';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+if (process.env.NODE_APP_INSTANCE === '0') {
+  delete process.env.NODE_APP_INSTANCE;
+}
+
+const { default: config } = await import('config');
 
 const channelId = config.get('channelIds.challenges');
 const schedule = config.get('schedule.challenge');

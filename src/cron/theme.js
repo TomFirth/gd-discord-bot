@@ -1,9 +1,15 @@
 import { CronJob } from 'cron';
-import config from 'config';
 import dotenv from 'dotenv';
 import axios from 'axios';
+import { withRetry } from '../utils/retry.js';
 
 dotenv.config();
+
+if (process.env.NODE_APP_INSTANCE === '0') {
+  delete process.env.NODE_APP_INSTANCE;
+}
+
+const { default: config } = await import('config');
 
 const channelId = config.get('channelIds.general');
 const schedule = config.get('schedule.theme');
@@ -33,7 +39,7 @@ const fetchFeatherlessTheme = async () => {
   if (!FEATHERLESS_API_KEY) return null;
 
   const prompt = 'Generate one creative (but don\'t be too weird, make it appropriate for a gamejam and try to make it a single word) game jam theme. Respond with only the theme text, no explanation or punctuation.';
-  const response = await axios.post(
+  const response = await withRetry(() => axios.post(
     `${FEATHERLESS_BASE_URL}/chat/completions`,
     {
       model: FEATHERLESS_MODEL,
@@ -50,7 +56,7 @@ const fetchFeatherlessTheme = async () => {
         'X-Title': 'GD Bot Theme Generator',
       },
     }
-  );
+  ), { retries: 3, baseDelayMs: 400 });
 
   const generated = response.data?.choices?.[0]?.message?.content;
   return cleanThemeText(generated);

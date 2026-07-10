@@ -1,8 +1,16 @@
 import { EmbedBuilder } from 'discord.js';
 import Parser from 'rss-parser';
-import config from 'config';
+import dotenv from 'dotenv';
 import fs from 'fs/promises';
 import path from 'path';
+
+dotenv.config();
+
+if (process.env.NODE_APP_INSTANCE === '0') {
+  delete process.env.NODE_APP_INSTANCE;
+}
+
+const { default: config } = await import('config');
 
 const parser = new Parser();
 const channelId = config.get('channelIds.freegames');
