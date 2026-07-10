@@ -13,15 +13,14 @@ const FEATHERLESS_BASE_URL = 'https://api.featherless.ai/v1';
 
 const FALLBACK_THEMES = [
   'Neon Night Market',
-  'Time-Travel School',
+  'Time-Travel',
   'Lost Expedition',
   'Robot Rebellion',
-  'Underwater Carnival',
+  'Underwater Mystery',
   'Gravity Shift',
-  'Dream Heist',
-  'Mythical Marketplace',
-  'Solarpunk Sanctuary',
-  'Haunted Arcade',
+  'Heist',
+  'Marketplace',
+  'Haunted',
 ];
 
 const cleanThemeText = (text) => {
@@ -33,7 +32,7 @@ const cleanThemeText = (text) => {
 const fetchFeatherlessTheme = async () => {
   if (!FEATHERLESS_API_KEY) return null;
 
-  const prompt = 'Generate one creative game jam theme. Respond with only the theme text, no explanation or punctuation.';
+  const prompt = 'Generate one creative (but don\'t be too weird, make it appropriate for a gamejam and try to make it a single word) game jam theme. Respond with only the theme text, no explanation or punctuation.';
   const response = await axios.post(
     `${FEATHERLESS_BASE_URL}/chat/completions`,
     {
@@ -84,6 +83,6 @@ export const theme = (client) => {
   new CronJob(schedule, () => {
     const channel = client.channels.cache.get(channelId);
     if (!channel) return;
-    runThemeNow((msg) => channel.send(msg));
+    runThemeNow((msg) => channel.send(`GameJam theme: ${msg}`));
   }).start();
 };
