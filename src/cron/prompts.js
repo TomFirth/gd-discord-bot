@@ -24,8 +24,7 @@ const generatePromptText = async (type) => {
   const prompts = {
     devtip: 'Give one concise game development tip or best practice. Respond with only the tip text, no bullet points, no explanation.',
     moodboard: 'Suggest one game genre, one tone, and one colour scheme combo. Respond in a single short sentence with the format: Genre: ..., Tone: ..., Colour scheme: ...',
-    showcase: 'Suggest one indie game developer or studio to showcase. Respond with only the name of the developer or studio and a brief description of their style.',
-    audio: 'Suggest one short sound effect idea for a game scene. Respond with only the idea text, no explanation.',
+    showcase: 'Suggest one indie game developer or studio to showcase. Respond with the name and a brief description of their style, then include one relevant link to a YouTube trailer, Reddit post, or official website.',
     story: 'Create one short game story hook or lore prompt. Respond with only the hook text, no explanation.',
   };
 
@@ -72,8 +71,7 @@ const getFallbackPrompt = (type) => {
   const fallbacks = {
     devtip: 'Keep your core loop readable before you add more systems.',
     moodboard: 'Genre: Cozy mystery, Tone: dreamy, Colour scheme: teal, lavender, and warm amber',
-    showcase: 'A Short Hike',
-    audio: 'A soft chime that plays when a hidden door unlocks.',
+    showcase: 'A Short Hike - https://ashort.hike.game/',
     story: 'A forgotten lighthouse keeper receives a message from the sea.',
   };
 
@@ -85,7 +83,6 @@ const createMoodboardImage = (promptText) => {
     '#1C1C2B',
     '#5B4B8A',
     '#8E7CC3',
-    '#F2C14E',
     '#F7E7C6',
   ];
 
@@ -147,6 +144,5 @@ export const initializePromptSchedules = (client) => {
   schedulePrompt(client, 'devtip', scheduleConfig.devtip);
   schedulePrompt(client, 'moodboard', scheduleConfig.moodboard);
   schedulePrompt(client, 'showcase', scheduleConfig.showcase);
-  schedulePrompt(client, 'audio', scheduleConfig.audio);
   schedulePrompt(client, 'story', scheduleConfig.story);
 };
