@@ -21,7 +21,6 @@ GD Bot is a Discord bot for game development communities. It combines a small se
 - A Discord application ID for slash command deployment
 - Optional:
   - Steam API key for `/steamcompare`
-  - Featherless API key for prompts
 
 ## Setup
 
@@ -34,8 +33,7 @@ GD Bot is a Discord bot for game development communities. It combines a small se
    BOT_TOKEN=your_discord_bot_token
    BOT_ID=your_discord_application_id
    STEAM_API_KEY=your_steam_api_key
-   FEATHERLESS_API_KEY=your_featherless_api_key
-   FEATHERLESS_MODEL=optional_model_name
+   LLM_MODEL=your_local_model
    ```
 
 3. Update the bot configuration in [config/default.json](config/default.json) for:

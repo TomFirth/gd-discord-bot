@@ -45,9 +45,6 @@ export const fetchRedditTopItem = async (subreddit) => {
   }
 };
 
-const formatPost = (post) =>
-  `**r/${post.subreddit}**: ${post.title}\n${post.url}`;
-
 export const startRedditFeeds = (client) => {
   const feeds = config.get('reddit.feeds');
 
@@ -63,7 +60,7 @@ export const startRedditFeeds = (client) => {
       const validPosts = posts.filter(Boolean);
       if (validPosts.length === 0) return;
 
-      const message = validPosts.map(formatPost).join('\n\n');
+      const message = validPosts.map().join('\n\n');
       await discordChannel.send(message);
     }).start();
   });

@@ -16,15 +16,11 @@ if (process.env.NODE_APP_INSTANCE === '0') {
 const { default: config } = await import('config');
 
 const channelId = config.get('channelIds.general');
-const FEATHERLESS_API_KEY = process.env.FEATHERLESS_API_KEY;
-const FEATHERLESS_MODEL = process.env.FEATHERLESS_MODEL || 'GalrionSoftworks/Margnum-12B-v1';
-const FEATHERLESS_BASE_URL = 'https://api.featherless.ai/v1';
+const LLM_BASE_URL = process.env.LLAMA_BASE_URL || process.env.LLAMA_SERVER_URL || 'http://192.168.1.81:8080/v1';
+const LLM_MODEL = process.env.LLAMA_MODEL;
+const LLM_API_KEY = process.env.LLAMA_API_KEY;
 
 const generatePromptText = async (type) => {
-  if (!FEATHERLESS_API_KEY) {
-    return getFallbackPrompt(type);
-  }
-
   const prompts = {
     devtip: 'Give one concise game development tip or best practice. Respond with only the tip text, no bullet points, no explanation.',
     moodboard: 'Suggest one game genre, one tone, and one colour scheme combo. Respond in a single short sentence with the format: Genre: ..., Tone: ..., Colour scheme: ...',
@@ -34,21 +30,22 @@ const generatePromptText = async (type) => {
   };
 
   try {
+    const body = {
+      messages: [{ role: 'user', content: prompts[type] }],
+      temperature: 0.8,
+    };
+
+    if (LLM_MODEL) {
+      body.model = LLM_MODEL;
+    }
+
     const response = await withRetry(() => axios.post(
-      `${FEATHERLESS_BASE_URL}/chat/completions`,
-      {
-        model: FEATHERLESS_MODEL,
-        messages: [{ role: 'user', content: prompts[type] }],
-        temperature: 0.8,
-        top_p: 0.95,
-        top_k: 40,
-        max_tokens: 48,
-      },
+      `${LLM_BASE_URL}/chat/completions`,
+      body,
       {
         headers: {
-          Authorization: `Bearer ${FEATHERLESS_API_KEY}`,
           'Content-Type': 'application/json',
-          'X-Title': 'GD Bot Prompt Generator',
+          ...(LLM_API_KEY ? { Authorization: `Bearer ${LLM_API_KEY}` } : {}),
         },
       }
     ), { retries: 3, baseDelayMs: 400 });
