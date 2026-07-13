@@ -53,6 +53,8 @@ client.on('interactionCreate', async (interaction) => {
       await commandHandlers.compareGames(interaction);
     } else if (commandName === 'theme-test') {
       await commandHandlers.testTheme(interaction);
+    } else if (commandName === 'gamedev') {
+      await commandHandlers.gamedev(interaction);
     }
   } catch (error) {
     console.error('Command execution error:', error);
