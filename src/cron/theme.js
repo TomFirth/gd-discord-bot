@@ -13,7 +13,7 @@ const { default: config } = await import('config');
 
 const channelId = config.get('channelIds.general');
 const schedule = config.get('schedule.theme');
-const LLM_BASE_URL = process.env.LLAMA_BASE_URL || process.env.LLAMA_SERVER_URL || 'http://192.168.1.81:1234/v1';
+const LLM_BASE_URL = process.env.LLAMA_BASE_URL || process.env.LLAMA_SERVER_URL || 'http://localhost:1234/v1';
 const LLM_MODEL = process.env.LLAMA_MODEL;
 const LLM_API_KEY = process.env.LLAMA_API_KEY;
 
