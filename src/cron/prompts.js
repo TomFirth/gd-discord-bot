@@ -80,29 +80,70 @@ const getFallbackPrompt = (type) => {
 
 const createMoodboardImage = (promptText) => {
   const palette = [
-    '#1C1C2B',
-    '#5B4B8A',
-    '#8E7CC3',
-    '#F7E7C6',
+    '#16162b',
+    '#5b4b8a',
+    '#8e7cc3',
+    '#f7e7c6',
+    '#ffb347',
   ];
 
   const textHash = createHash('sha1').update(promptText).digest('hex');
   const accent = palette[parseInt(textHash.slice(0, 2), 16) % palette.length];
   const bg = palette[parseInt(textHash.slice(2, 4), 16) % palette.length];
+  const glow = palette[parseInt(textHash.slice(4, 6), 16) % palette.length];
 
   const width = 1200;
   const height = 675;
+  const escapedText = promptText
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  const wrapText = (text, maxChars) => {
+    const words = text.split(' ');
+    const lines = [];
+    let current = '';
+
+    for (const word of words) {
+      if ((current + ' ' + word).trim().length <= maxChars) {
+        current = (current + ' ' + word).trim();
+      } else {
+        if (current) lines.push(current);
+        current = word;
+      }
+    }
+
+    if (current) lines.push(current);
+    return lines;
+  };
+
+  const lines = wrapText(escapedText, 32);
+  const textLines = lines.map((line, index) => `
+        <tspan x="120" dy="1.2em">${line}</tspan>`
+  ).join('');
+
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-      <rect width="${width}" height="${height}" fill="${bg}" />
-      <rect x="80" y="80" width="1040" height="515" rx="36" fill="${accent}" opacity="0.24" />
-      <circle cx="950" cy="220" r="180" fill="${palette[3]}" opacity="0.8" />
-      <circle cx="300" cy="460" r="220" fill="${palette[4]}" opacity="0.9" />
-      <rect x="120" y="140" width="320" height="24" rx="12" fill="${palette[4]}" opacity="0.95" />
-      <rect x="120" y="190" width="560" height="28" rx="14" fill="${palette[4]}" opacity="0.9" />
-      <rect x="120" y="240" width="460" height="28" rx="14" fill="${palette[4]}" opacity="0.9" />
-      <text x="120" y="420" font-family="Arial, sans-serif" font-size="48" font-weight="700" fill="${palette[4]}">Moodboard</text>
-      <text x="120" y="485" font-family="Arial, sans-serif" font-size="26" fill="${palette[4]}">${promptText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</text>
+      <defs>
+        <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="${bg}" />
+          <stop offset="100%" stop-color="${accent}" />
+        </linearGradient>
+        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#000" flood-opacity="0.18" />
+        </filter>
+      </defs>
+
+      <rect width="${width}" height="${height}" fill="url(#bgGradient)" />
+      <path d="M0 150 Q300 80 600 160 T1200 140 L1200 675 L0 675 Z" fill="${glow}" opacity="0.16" />
+      <path d="M0 320 Q250 260 520 340 T1200 310 L1200 675 L0 675 Z" fill="#000" opacity="0.08" />
+      <circle cx="980" cy="170" r="150" fill="#fff" opacity="0.12" />
+      <circle cx="220" cy="520" r="170" fill="#fff" opacity="0.08" />
+      <rect x="80" y="80" width="1040" height="515" rx="42" fill="#10101f" opacity="0.88" filter="url(#shadow)" />
+      <rect x="120" y="120" width="360" height="46" rx="18" fill="${glow}" opacity="0.95" />
+      <text x="140" y="155" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="800" fill="#12121b">MOODBOARD</text>
+      <text x="120" y="220" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="700" fill="#fff">${textLines}</text>
+      <text x="120" y="520" font-family="Inter, Arial, sans-serif" font-size="20" fill="#d8d3f2" opacity="0.9">A bold prompt background for creative spark.</text>
     </svg>`;
 
   return Buffer.from(svg);
