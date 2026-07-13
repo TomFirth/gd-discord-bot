@@ -36,6 +36,9 @@ const cleanThemeText = (text) => {
 
 const fetchLlmTheme = async () => {
   const prompt = 'Generate one creative (but don\'t be too weird, make it appropriate for a gamejam and try to make it a single word) game jam theme. Respond with only the theme text, no explanation or punctuation.';
+
+  console.log("Calling LLM URL:", `${LLM_BASE_URL}/chat`);
+
   const response = await withRetry(() => axios.post(
     `${LLM_BASE_URL}/chat`,
     {
