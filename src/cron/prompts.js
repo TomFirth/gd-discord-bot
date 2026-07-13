@@ -26,6 +26,7 @@ const generatePromptText = async (type) => {
     moodboard: 'Suggest one game genre, one tone, and one colour scheme combo. Respond in a single short sentence with the format: Genre: ..., Tone: ..., Colour scheme: ...',
     showcase: 'Suggest one indie game developer or studio to showcase. Respond with the name and a brief description of their style, then include one relevant link to a YouTube trailer, Reddit post, or official website.',
     story: 'Create one short game story hook or lore prompt. Respond with only the hook text, no explanation.',
+    marketing: 'Give one actionable marketing task for a game studio posting to social media. Keep it concise, specific, and easy to execute. Respond with only the task text, no bullet points, no explanation.',
   };
 
   try {
@@ -63,7 +64,7 @@ const cleanPromptText = (text) => {
     .split('\n')[0]
     .trim()
     .replace(/^['"\s]+/, '')
-    .replace(/['"\s.?!]+$/, '')
+    .replace(/['"\s]+$/, '')
     .trim();
 };
 
@@ -73,6 +74,7 @@ const getFallbackPrompt = (type) => {
     moodboard: 'Genre: Cozy mystery, Tone: dreamy, Colour scheme: teal, lavender, and warm amber',
     showcase: 'A Short Hike - https://ashort.hike.game/',
     story: 'A forgotten lighthouse keeper receives a message from the sea.',
+    marketing: 'Post a quick before-and-after progress clip showing a polished mechanic.',
   };
 
   return fallbacks[type] || 'Keep the player experience focused and legible.';
@@ -158,8 +160,26 @@ const getMoodboardAttachment = async (promptText) => {
   };
 };
 
+export const buildMarketingMessage = (suggestion) => {
+  const cleanedSuggestion = (suggestion || '').trim() || getFallbackPrompt('marketing');
+  const highlightedText = cleanedSuggestion.length > 120
+    ? `${cleanedSuggestion.slice(0, 117)}...`
+    : cleanedSuggestion;
+
+  return {
+    content: `**Marketing idea**\n\n> ${highlightedText}`,
+    embeds: [{
+      color: 0x1d4ed8,
+      title: 'Marketing idea',
+      description: highlightedText,
+      footer: { text: 'One practical post idea for the next update' },
+    }],
+  };
+};
+
 const sendPrompt = async (client, type) => {
-  const channel = client.channels.cache.get(channelId);
+  const targetChannelId = type === 'marketing' ? config.get('channelIds.marketing') : channelId;
+  const channel = client.channels.cache.get(targetChannelId);
   if (!channel) return;
 
   const promptText = await generatePromptText(type);
@@ -168,6 +188,11 @@ const sendPrompt = async (client, type) => {
   if (type === 'moodboard') {
     const attachment = await getMoodboardAttachment(promptText);
     await channel.send({ content: `${header}${promptText}`, files: [attachment] });
+    return;
+  }
+
+  if (type === 'marketing') {
+    await channel.send(buildMarketingMessage(promptText));
     return;
   }
 
@@ -186,4 +211,5 @@ export const initializePromptSchedules = (client) => {
   schedulePrompt(client, 'moodboard', scheduleConfig.moodboard);
   schedulePrompt(client, 'showcase', scheduleConfig.showcase);
   schedulePrompt(client, 'story', scheduleConfig.story);
+  schedulePrompt(client, 'marketing', scheduleConfig.marketing);
 };

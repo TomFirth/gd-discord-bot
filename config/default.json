@@ -3,7 +3,8 @@
     "challenges": "1262740122185633842",
     "freegames": "1299312647451185213",
     "general": "1262380130693808212",
-    "unrelated": "1293544258162266122"
+    "unrelated": "1293544258162266122",
+    "marketing": "1483847643581906974"
   },
   "schedule": {
     "challenge": "0 17 * * 1",
@@ -11,7 +12,8 @@
     "devtip": "0 12 * * 3",
     "moodboard": "0 12 * * 4",
     "showcase": "0 17 * * 5",
-    "story": "0 13 * * 5"
+    "story": "0 13 * * 5",
+    "marketing": "0 13 */3 * *"
   },
   "reddit": {
     "feeds": {
