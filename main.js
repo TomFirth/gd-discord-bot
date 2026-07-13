@@ -51,6 +51,8 @@ client.on('interactionCreate', async (interaction) => {
   try {
     if (commandName === 'steamcompare') {
       await commandHandlers.compareGames(interaction);
+    } else if (commandName === 'theme-test') {
+      await commandHandlers.testTheme(interaction);
     }
   } catch (error) {
     console.error('Command execution error:', error);
