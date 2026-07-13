@@ -13,18 +13,17 @@ const { default: config } = await import('config');
 
 const channelId = config.get('channelIds.general');
 const schedule = config.get('schedule.theme');
-const LLM_BASE_URL = process.env.LLAMA_BASE_URL || process.env.LLAMA_SERVER_URL || 'http://192.168.1.81:8080/v1';
+const LLM_BASE_URL = process.env.LLAMA_BASE_URL || process.env.LLAMA_SERVER_URL || 'http://192.168.1.81:1234/v1';
 const LLM_MODEL = process.env.LLAMA_MODEL;
 
 const FALLBACK_THEMES = [
-  'Neon Night Market',
+  'Night Market',
   'Time-Travel',
   'Lost Expedition',
   'Robot Rebellion',
   'Underwater Mystery',
   'Gravity Shift',
   'Heist',
-  'Marketplace',
   'Haunted',
 ];
 
