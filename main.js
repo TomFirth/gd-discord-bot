@@ -51,8 +51,6 @@ client.on('interactionCreate', async (interaction) => {
   try {
     if (commandName === 'steamcompare') {
       await commandHandlers.compareGames(interaction);
-    } else if (commandName === 'theme-test') {
-      await commandHandlers.testTheme(interaction);
     } else if (commandName === 'gamedev') {
       await commandHandlers.gamedev(interaction);
     }
