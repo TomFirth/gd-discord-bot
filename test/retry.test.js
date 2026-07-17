@@ -20,6 +20,24 @@ test('retries transient failures before succeeding', async () => {
   assert.equal(attempts, 3);
 });
 
+test('retries 409 conflict responses before succeeding', async () => {
+  let attempts = 0;
+
+  const result = await withRetry(async () => {
+    attempts += 1;
+    if (attempts < 3) {
+      const error = new Error('Request failed with status code 409');
+      error.status = 409;
+      throw error;
+    }
+
+    return 'ok';
+  }, { retries: 3, baseDelayMs: 1 });
+
+  assert.equal(result, 'ok');
+  assert.equal(attempts, 3);
+});
+
 test('does not retry non-transient failures', async () => {
   let attempts = 0;
 

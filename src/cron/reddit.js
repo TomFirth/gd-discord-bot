@@ -4,6 +4,8 @@ import { CronJob } from 'cron';
 import dotenv from 'dotenv';
 import { withRetry } from '../utils/retry.js';
 
+const RETRY_DELAY_MS = 2000;
+
 dotenv.config();
 
 if (process.env.NODE_APP_INSTANCE === '0') {
@@ -27,7 +29,8 @@ export const fetchRedditTopItem = async (subreddit) => {
       },
       responseType: 'text',
       timeout: 15000,
-    }), { retries: 3, baseDelayMs: 500 });
+      maxRedirects: 3,
+    }), { retries: 3, baseDelayMs: RETRY_DELAY_MS });
 
     const feed = await parser.parseString(res.data);
     const item = feed.items?.[0];
@@ -56,11 +59,16 @@ export const startRedditFeeds = (client) => {
       const discordChannel = client.channels.cache.get(channelId);
       if (!discordChannel) return;
 
-      const posts = await Promise.all(subreddits.map(fetchRedditTopItem));
+      const posts = [];
+      for (const subreddit of subreddits) {
+        const post = await fetchRedditTopItem(subreddit);
+        if (post) posts.push(post);
+      }
+
       const validPosts = posts.filter(Boolean);
       if (validPosts.length === 0) return;
 
-      const message = validPosts.map().join('\n\n');
+      const message = validPosts.map((post) => `/${post.subreddit}: [${post.title}](${post.url})`).join('\n\n');
       await discordChannel.send(message);
     }).start();
   });

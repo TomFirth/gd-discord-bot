@@ -17,17 +17,6 @@ const LLM_BASE_URL = process.env.LLAMA_BASE_URL || process.env.LLAMA_SERVER_URL 
 const LLM_MODEL = process.env.LLAMA_MODEL;
 const LLM_API_KEY = process.env.LLAMA_API_KEY;
 
-const FALLBACK_THEMES = [
-  'Night Market',
-  'Time-Travel',
-  'Lost Expedition',
-  'Robot Rebellion',
-  'Underwater Mystery',
-  'Gravity Shift',
-  'Heist',
-  'Haunted',
-];
-
 const cleanThemeText = (text) => {
   if (!text) return '';
   const firstLine = text.split('\n')[0].trim();
@@ -52,22 +41,17 @@ const fetchLlmTheme = async () => {
     return cleanThemeText(generated);
   };
 
-  const getFallbackTheme = () =>
-  FALLBACK_THEMES[Math.floor(Math.random() * FALLBACK_THEMES.length)];
-
 export const runThemeNow = async (send) => {
   try {
     let theme = await fetchLlmTheme();
 
     if (!theme) {
-      console.warn('Theme generation failed; using fallback theme list.');
-      theme = getFallbackTheme();
+      console.warn('Theme generation failed.');
     }
 
     send(theme);
   } catch (error) {
     console.error('Theme generation error:', error.message);
-    send(getFallbackTheme());
   }
 };
 

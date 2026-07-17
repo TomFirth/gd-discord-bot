@@ -8,7 +8,6 @@ GD Bot is a Discord bot for game development communities. It combines a small se
 - Weekly GameJam theme.
 - Scheduled game-dev content:
   - dev tips
-  - moodboards with a generated palette-style image
   - developer showcases
   - audio ideas
   - story hooks
@@ -67,7 +66,6 @@ Example:
 The bot’s scheduled jobs are configured in [config/default.json](config/default.json). Current prompt types include:
 
 - `devtip` — Wednesday at 12:00
-- `moodboard` — Thursday at 12:00
 - `showcase` — Friday at 17:00
 - `audio` — Friday at 11:00
 - `story` — Friday at 13:00

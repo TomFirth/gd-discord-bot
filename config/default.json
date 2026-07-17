@@ -10,7 +10,6 @@
     "challenge": "0 17 * * 1",
     "theme": "0 9 * * 5",
     "devtip": "0 12 * * 3",
-    "moodboard": "0 12 * * 4",
     "showcase": "0 17 * * 5",
     "story": "0 13 * * 5",
     "marketing": "0 13 */3 * *"
