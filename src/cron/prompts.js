@@ -16,7 +16,7 @@ if (process.env.NODE_APP_INSTANCE === '0') {
 const { default: config } = await import('config');
 
 const channelId = config.get('channelIds.general');
-const LLM_BASE_URL = process.env.LLAMA_BASE_URL || process.env.LLAMA_SERVER_URL || 'http://localhost:1234/v1';
+const LLM_BASE_URL = process.env.LLAMA_BASE_URL;
 const LLM_MODEL = process.env.LLAMA_MODEL;
 const LLM_API_KEY = process.env.LLAMA_API_KEY;
 
@@ -30,8 +30,7 @@ const generatePromptText = async (type) => {
 
   try {
     const body = {
-      messages: [{ role: 'user', content: prompts[type] }],
-      temperature: 0.8,
+      message: prompts[type],
     };
 
     if (LLM_MODEL) {
@@ -39,7 +38,7 @@ const generatePromptText = async (type) => {
     }
 
     const response = await withRetry(() => axios.post(
-      `${LLM_BASE_URL}/chat/completions`,
+      `${LLM_BASE_URL}/chat/`,
       body,
       {
         headers: {
