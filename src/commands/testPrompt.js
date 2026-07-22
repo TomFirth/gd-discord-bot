@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { generatePromptText } from '../services/prompts.js';
+import { generatePromptText, prompts } from '../services/prompts.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -7,12 +7,14 @@ export default {
     .setDescription('Generate a random AI prompt'),
 
   async execute(interaction) {
-    await interaction.deferReply();
-
-    const types = Object.keys(prompts);
-    const randomType = types[Math.floor(Math.random() * types.length)];
-
     try {
+      await interaction.deferReply();
+
+      const types = Object.keys(prompts);
+      const randomType = types[Math.floor(Math.random() * types.length)];
+
+      console.log(`Generating prompt: ${randomType}`);
+
       const result = await generatePromptText(randomType);
 
       await interaction.editReply({
@@ -22,9 +24,16 @@ export default {
     } catch (error) {
       console.error('Prompt test failed:', error);
 
-      await interaction.editReply({
-        content: 'Failed to generate prompt.'
-      });
+      if (interaction.deferred || interaction.replied) {
+        await interaction.editReply({
+          content: 'Failed to generate prompt.'
+        });
+      } else {
+        await interaction.reply({
+          content: 'Failed to generate prompt.',
+          ephemeral: true
+        });
+      }
     }
   },
 };
