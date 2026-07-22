@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { prompts, generatePromptText } from '../services/prompts.js';
+import { generatePromptText } from '../services/prompts.js';
 
 export default {
   data: new SlashCommandBuilder()

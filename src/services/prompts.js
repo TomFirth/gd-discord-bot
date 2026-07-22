@@ -1,10 +1,6 @@
 import { CronJob } from 'cron';
 import dotenv from 'dotenv';
 import axios from 'axios';
-import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import path from 'node:path';
 import { withRetry } from '../utils/retry.js';
 
 dotenv.config();
@@ -20,13 +16,17 @@ const LLM_BASE_URL = process.env.LLAMA_BASE_URL;
 const LLM_MODEL = process.env.LLAMA_MODEL;
 const LLM_API_KEY = process.env.LLAMA_API_KEY;
 
+export const prompts = {
+  devtip: 'Give one concise game development tip or best practice. Respond with only the tip text, no bullet points, no explanation.',
+  showcase: 'Suggest one indie game developer or studio to showcase. Respond with the name and a brief description of their style, then include one relevant link to a YouTube trailer, Reddit post, or official website.',
+  story: 'Create one short game story hook or lore prompt. Respond with only the hook text, no explanation.',
+  marketing: 'Give one actionable marketing task for a game studio posting to social media. Keep it concise, specific, and easy to execute. Respond with only the task text, no bullet points, no explanation.',
+};
+
 export const generatePromptText = async (type) => {
-  export const prompts = {
-    devtip: 'Give one concise game development tip or best practice. Respond with only the tip text, no bullet points, no explanation.',
-    showcase: 'Suggest one indie game developer or studio to showcase. Respond with the name and a brief description of their style, then include one relevant link to a YouTube trailer, Reddit post, or official website.',
-    story: 'Create one short game story hook or lore prompt. Respond with only the hook text, no explanation.',
-    marketing: 'Give one actionable marketing task for a game studio posting to social media. Keep it concise, specific, and easy to execute. Respond with only the task text, no bullet points, no explanation.',
-  };
+  if (!prompts[type]) {
+    throw new Error(`Unknown prompt type: ${type}`);
+  }
 
   try {
     const body = {
@@ -39,10 +39,6 @@ export const generatePromptText = async (type) => {
         },
       ],
     };
-
-    if (LLM_MODEL) {
-      body.model = LLM_MODEL;
-    }
 
     const response = await withRetry(() => axios.post(
       `${LLM_BASE_URL}/chat/completions`,
@@ -60,6 +56,7 @@ export const generatePromptText = async (type) => {
     return cleanPromptText(generated);
   } catch (error) {
     console.error(`Prompt generation error (${type}):`, error.message);
+    return '';
   }
 };
 
@@ -101,7 +98,11 @@ const sendPrompt = async (client, type) => {
     return;
   }
 
-  await channel.send(`${header}${promptText}`);
+  await channel.send(
+    promptText
+      ? `${header}${promptText}`
+      : `${header}Failed to generate prompt`
+  );
 };
 
 const schedulePrompt = (client, type, cronSchedule) => {
