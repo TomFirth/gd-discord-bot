@@ -20,8 +20,8 @@ const LLM_BASE_URL = process.env.LLAMA_BASE_URL;
 const LLM_MODEL = process.env.LLAMA_MODEL;
 const LLM_API_KEY = process.env.LLAMA_API_KEY;
 
-const generatePromptText = async (type) => {
-  const prompts = {
+export const generatePromptText = async (type) => {
+  export const prompts = {
     devtip: 'Give one concise game development tip or best practice. Respond with only the tip text, no bullet points, no explanation.',
     showcase: 'Suggest one indie game developer or studio to showcase. Respond with the name and a brief description of their style, then include one relevant link to a YouTube trailer, Reddit post, or official website.',
     story: 'Create one short game story hook or lore prompt. Respond with only the hook text, no explanation.',
@@ -30,7 +30,14 @@ const generatePromptText = async (type) => {
 
   try {
     const body = {
-      message: prompts[type],
+      model: LLM_MODEL || 'qwen2.5-coder',
+      stream: false,
+      messages: [
+        {
+          role: 'user',
+          content: prompts[type],
+        },
+      ],
     };
 
     if (LLM_MODEL) {
@@ -38,7 +45,7 @@ const generatePromptText = async (type) => {
     }
 
     const response = await withRetry(() => axios.post(
-      `${LLM_BASE_URL}/chat/`,
+      `${LLM_BASE_URL}/chat/completions`,
       body,
       {
         headers: {
@@ -48,6 +55,7 @@ const generatePromptText = async (type) => {
       }
     ), { retries: 3, baseDelayMs: 400 });
 
+    console.log('LLM RESPONSE:', JSON.stringify(response.data, null, 2));
     const generated = response.data?.choices?.[0]?.message?.content;
     return cleanPromptText(generated);
   } catch (error) {
