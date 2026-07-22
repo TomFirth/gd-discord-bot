@@ -49,11 +49,16 @@ client.on('interactionCreate', async (interaction) => {
   }, COMMAND_COOLDOWN_MS);
 
   try {
-    if (commandName === 'steamcompare') {
-      await commandHandlers.compareGames(interaction);
-    } else if (commandName === 'gamedev') {
-      await commandHandlers.gamedev(interaction);
+    const handler = commandHandlers[commandName];
+
+    if (!handler) {
+      return interaction.reply({
+        content: `Unknown command: ${commandName}`,
+        ephemeral: true,
+      });
     }
+
+    await handler(interaction);
   } catch (error) {
     console.error('Command execution error:', error);
     if (interaction.deferred || interaction.replied) {
