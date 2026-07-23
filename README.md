@@ -32,6 +32,7 @@ GD Bot is a Discord bot for game development communities. It combines a small se
    BOT_TOKEN=your_discord_bot_token
    BOT_ID=your_discord_application_id
    STEAM_API_KEY=your_steam_api_key
+   LLAMA_BASE_URL=your_local_model_ip/v1
    LLM_MODEL=your_local_model
    ```
 
