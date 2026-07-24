@@ -171,7 +171,7 @@ const fetchIdeaEnhancement = async (idea) => {
     ],
   };
 
-  const url = `${LLM_BASE_URL}/v1/chat/completions`.replace(/([^:]\/)\/+/g, '$1');
+  const url = `${LLM_BASE_URL}/v1/chat/completions`.replace(/\/v1\/v1\//, '/v1/');
   const response = await withRetry(() => axios.post(
     url,
     body,

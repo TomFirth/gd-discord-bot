@@ -36,7 +36,7 @@ const fetchLlmTheme = async () => {
     ],
   };
 
-  const url = `${LLM_BASE_URL}/v1/chat/completions`.replace(/([^:]\/)\/+/g, '$1');
+  const url = `${LLM_BASE_URL}/v1/chat/completions`.replace(/\/v1\/v1\//, '/v1/');
   console.log(`LLM Request URL (theme): ${url}`);
 
   const response = await withRetry(() => axios.post(
