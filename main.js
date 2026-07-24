@@ -16,10 +16,10 @@ const client = new Client({
 
 client.login(process.env.BOT_TOKEN);
 
-client.once('ready', async () => {
+client.once('clientReady', async (readyClient) => {
   console.log(`Bot started at ${new Date()}`);
-  await initializeScheduledEvents(client);
-  await initializeStreams(client);
+  await initializeScheduledEvents(readyClient);
+  await initializeStreams(readyClient);
 });
 
 const commandCooldowns = new Map();
