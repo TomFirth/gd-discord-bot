@@ -61,12 +61,7 @@ export default {
       let result;
       if (targetType === 'theme') {
         const { runThemeNow } = await import('../cron/theme.js');
-        await new Promise((resolve, reject) => {
-          runThemeNow((msg) => {
-            result = msg;
-            resolve();
-          }).catch(reject);
-        });
+        result = await runThemeNow();
       } else {
         result = await generatePromptText(targetType);
       }
