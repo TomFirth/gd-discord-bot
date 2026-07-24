@@ -19,15 +19,22 @@ const LLM_API_KEY = process.env.LLAMA_API_KEY;
 
 const cleanThemeText = (text) => {
   if (!text) return '';
+
   const firstLine = text.split('\n')[0].trim();
-  return firstLine.replace(/^["'\s]+/, '').replace(/["'\s\.\!\?]+$/, '').trim();
+
+  return firstLine
+    .replace(/^["'\s]+/, '')
+    .replace(/["'\s.!?]+$/, '')
+    .trim();
 };
 
 const fetchLlmTheme = async () => {
-  const prompt = 'Generate one creative (but don\'t be too weird, make it appropriate for a gamejam and try to make it a single word) game jam theme. Respond with only the theme text, no explanation or punctuation.';
+  const prompt = 'Generate one creative but accessible single-word game jam theme. Respond with only the theme text, without explanation or punctuation.';
+
   const body = {
     model: LLM_MODEL || 'qwen2.5-coder-3b-instruct-q4_k_m.gguf',
     stream: false,
+    max_tokens: 32,
     messages: [
       {
         role: 'user',
@@ -36,43 +43,67 @@ const fetchLlmTheme = async () => {
     ],
   };
 
-  const url = `${LLM_BASE_URL}/v1/chat/completions`.replace(/\/v1\/v1\//, '/v1/');
-  console.log(`LLM Request URL (theme): ${url}`);
+  const url = `${LLM_BASE_URL}/v1/chat/completions`
+    .replace(/\/v1\/v1\//, '/v1/');
 
-  const response = await withRetry(() => axios.post(
-    url,
-    body,
-    {
+  console.log(`LLM Request URL (theme): ${url}`);
+  console.log('Theme request body:', JSON.stringify(body));
+
+  const startedAt = Date.now();
+
+  const response = await withRetry(
+    () => axios.post(url, body, {
       headers: {
         'Content-Type': 'application/json',
-        ...(LLM_API_KEY ? { Authorization: `Bearer ${LLM_API_KEY}` } : {}),
+        ...(LLM_API_KEY
+          ? { Authorization: `Bearer ${LLM_API_KEY}` }
+          : {}),
       },
       timeout: 30000,
+    }),
+    {
+      retries: 0,
+      baseDelayMs: 400,
     }
-  ), { retries: 3, baseDelayMs: 400 });
+  );
+
+  console.log(`Theme response received in ${Date.now() - startedAt}ms`);
 
   const generated = response.data?.choices?.[0]?.message?.content;
   return cleanThemeText(generated);
 };
 
-export const runThemeNow = async (send) => {
+export const runThemeNow = async () => {
   try {
-    let theme = await fetchLlmTheme();
+    const generatedTheme = await fetchLlmTheme();
 
-    if (!theme) {
-      console.warn('Theme generation failed.');
+    if (!generatedTheme) {
+      console.warn('Theme generation returned an empty response.');
+      return '';
     }
 
-    send(theme);
+    return generatedTheme;
   } catch (error) {
-    console.error('Theme generation error:', error.message);
+    console.error('Theme generation error:', {
+      message: error.message,
+      code: error.code,
+    });
+
+    return '';
   }
 };
 
 export const theme = (client) => {
-  new CronJob(schedule, () => {
+  new CronJob(schedule, async () => {
     const channel = client.channels.cache.get(channelId);
     if (!channel) return;
-    runThemeNow((msg) => channel.send(`GameJam theme: ${msg}`));
+
+    const generatedTheme = await runThemeNow();
+
+    await channel.send(
+      generatedTheme
+        ? `GameJam theme: ${generatedTheme}`
+        : 'GameJam theme generation failed.'
+    );
   }).start();
 };

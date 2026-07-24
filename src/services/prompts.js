@@ -33,6 +33,7 @@ export const generatePromptText = async (type) => {
     const body = {
       model: LLM_MODEL || 'qwen2.5-coder-3b-instruct-q4_k_m.gguf',
       stream: false,
+      max_tokens: 32,
       messages: [
         {
           role: 'user',
