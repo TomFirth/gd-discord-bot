@@ -8,7 +8,7 @@
   },
   "schedule": {
     "challenge": "0 17 * * 1",
-    "theme": "0 9 * * 5",
+    "theme": "30 10 * * 5",
     "devtip": "0 12 * * 3",
     "showcase": "0 17 * * 5",
     "story": "0 13 * * 5",

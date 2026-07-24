@@ -8,14 +8,14 @@ const RETRY_DELAY_MS = 2000;
 
 dotenv.config();
 
-if (process.env.NODE_APP_INSTANCE === '0') {
+if (process.env.NODE_APP_INSTANCE) {
   delete process.env.NODE_APP_INSTANCE;
 }
 
 const { default: config } = await import('config');
 
 const parser = new Parser();
-const USER_AGENT = 'DiscordBot/1.0 (by u/yourusername)';
+const USER_AGENT = 'GDBot/2.0 (by /u/GamesMas_Bot)';
 
 const getRedditRssUrl = (subreddit) =>
   `https://www.reddit.com/r/${subreddit}/top/.rss?limit=1&t=day`;
@@ -68,7 +68,7 @@ export const startRedditFeeds = (client) => {
       const validPosts = posts.filter(Boolean);
       if (validPosts.length === 0) return;
 
-      const message = validPosts.map().join('\n\n');
+      const message = validPosts.map(post => `**/r/${post.subreddit}**: ${post.title}\n${post.url}`).join('\n\n');
       await discordChannel.send(message);
     }).start();
   });

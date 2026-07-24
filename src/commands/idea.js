@@ -11,7 +11,7 @@ const command = new SlashCommandBuilder()
   .setDescription('Posts a random game idea from one of your configured Google Docs.');
 
 const randomColour = () => Math.floor(Math.random() * 0xffffff);
-const LLM_BASE_URL = process.env.LLAMA_BASE_URL || process.env.LLAMA_SERVER_URL || 'http://localhost:1234';
+const LLM_BASE_URL = process.env.LLAMA_BASE_URL;
 
 const normalizeDocumentId = (value) => {
   if (!value) return null;
@@ -160,16 +160,29 @@ export const parseLlmEnhancement = (rawText = '') => {
 
 const fetchIdeaEnhancement = async (idea) => {
   const prompt = buildIdeaPrompt(idea);
+  const body = {
+    model: process.env.LLAMA_MODEL || 'qwen2.5-coder',
+    stream: false,
+    messages: [
+      {
+        role: 'user',
+        content: prompt,
+      },
+    ],
+  };
 
   const response = await withRetry(() => axios.post(
-    `${LLM_BASE_URL}/chat`,
-    { message: prompt },
+    `${LLM_BASE_URL}/chat/completions`,
+    body,
     {
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(process.env.LLAMA_API_KEY ? { Authorization: `Bearer ${process.env.LLAMA_API_KEY}` } : {}),
+      },
     },
   ), { retries: 3, baseDelayMs: 400 });
 
-  const rawResponse = response.data?.response || response.data?.message?.content || '';
+  const rawResponse = response.data?.choices?.[0]?.message?.content || '';
   return parseLlmEnhancement(rawResponse);
 };
 

@@ -6,7 +6,12 @@ const ALLOWED_USER_ID = '603324775833665553';
 export default {
   data: new SlashCommandBuilder()
     .setName('prompt-test')
-    .setDescription('Generate a random AI prompt'),
+    .setDescription('Generate a random AI prompt')
+    .addStringOption(option =>
+      option.setName('type')
+        .setDescription('The type of prompt to generate (or "help" for a list)')
+        .setRequired(false)
+    ),
 
   async execute(interaction) {
     if (interaction.user.id !== ALLOWED_USER_ID) {
@@ -17,17 +22,46 @@ export default {
     }
 
     try {
+      const typeOption = interaction.options.getString('type')?.toLowerCase();
+      const availableTypes = [...Object.keys(prompts), 'theme']; // Adding 'theme' as it is separate in cron
+
+      if (typeOption === 'help') {
+        return interaction.reply({
+          content: `**Available prompt types:**\n- ${availableTypes.join('\n- ')}\n\nLeave blank for a random one.`,
+          ephemeral: true
+        });
+      }
+
       await interaction.deferReply();
 
-      const types = Object.keys(prompts);
-      const randomType = types[Math.floor(Math.random() * types.length)];
+      let targetType = typeOption;
+      if (!targetType) {
+        targetType = availableTypes[Math.floor(Math.random() * availableTypes.length)];
+      }
 
-      console.log(`Generating prompt: ${randomType}`);
+      if (!availableTypes.includes(targetType)) {
+        return interaction.editReply({
+          content: `Unknown prompt type: \`${targetType}\`. Use \`/prompt-test help\` to see available types.`
+        });
+      }
 
-      const result = await generatePromptText(randomType);
+      console.log(`Generating prompt: ${targetType}`);
+
+      let result;
+      if (targetType === 'theme') {
+        const { runThemeNow } = await import('../cron/theme.js');
+        await new Promise((resolve, reject) => {
+          runThemeNow((msg) => {
+            result = msg;
+            resolve();
+          }).catch(reject);
+        });
+      } else {
+        result = await generatePromptText(targetType);
+      }
 
       await interaction.editReply({
-        content: `**${randomType.toUpperCase()}**\n\n${result || 'No response generated'}`
+        content: `**${targetType.toUpperCase()}**\n\n${result || 'No response generated'}`
       });
 
     } catch (error) {

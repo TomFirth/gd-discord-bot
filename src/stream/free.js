@@ -6,7 +6,7 @@ import path from 'path';
 
 dotenv.config();
 
-if (process.env.NODE_APP_INSTANCE === '0') {
+if (process.env.NODE_APP_INSTANCE) {
   delete process.env.NODE_APP_INSTANCE;
 }
 

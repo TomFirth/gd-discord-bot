@@ -5,7 +5,7 @@ import { withRetry } from '../utils/retry.js';
 
 dotenv.config();
 
-if (process.env.NODE_APP_INSTANCE === '0') {
+if (process.env.NODE_APP_INSTANCE) {
   delete process.env.NODE_APP_INSTANCE;
 }
 
@@ -17,6 +17,7 @@ const LLM_MODEL = process.env.LLAMA_MODEL;
 const LLM_API_KEY = process.env.LLAMA_API_KEY;
 
 export const prompts = {
+  challenge: 'Give one concise game development challenge for today. Something that can be done in a few hours. Respond with only the challenge text, no bullet points, no explanation.',
   devtip: 'Give one concise game development tip or best practice. Respond with only the tip text, no bullet points, no explanation.',
   showcase: 'Suggest one indie game developer or studio to showcase. Respond with the name and a brief description of their style, then include one relevant link to a YouTube trailer, Reddit post, or official website.',
   story: 'Create one short game story hook or lore prompt. Respond with only the hook text, no explanation.',
@@ -113,6 +114,7 @@ const schedulePrompt = (client, type, cronSchedule) => {
 
 export const initializePromptSchedules = (client) => {
   const scheduleConfig = config.get('schedule');
+  schedulePrompt(client, 'challenge', scheduleConfig.challenge);
   schedulePrompt(client, 'devtip', scheduleConfig.devtip);
   schedulePrompt(client, 'showcase', scheduleConfig.showcase);
   schedulePrompt(client, 'story', scheduleConfig.story);
