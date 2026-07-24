@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { SlashCommandBuilder, MessageFlags } from 'discord.js';
 import { generatePromptText, prompts } from '../services/prompts.js';
 
 const ALLOWED_USER_ID = '603324775833665553';
@@ -9,30 +9,37 @@ export default {
     .setDescription('Generate a random AI prompt')
     .addStringOption(option =>
       option.setName('type')
-        .setDescription('The type of prompt to generate (or "help" for a list)')
+        .setDescription('The type of prompt to generate')
         .setRequired(false)
+        .addChoices(
+          { name: 'Challenge', value: 'challenge' },
+          { name: 'Theme', value: 'theme' },
+          { name: 'Dev Tip', value: 'devtip' },
+          { name: 'Showcase', value: 'showcase' },
+          { name: 'Story', value: 'story' },
+          { name: 'Marketing', value: 'marketing' },
+          { name: 'Help', value: 'help' },
+        )
     ),
 
   async execute(interaction) {
     if (interaction.user.id !== ALLOWED_USER_ID) {
       return interaction.reply({
         content: 'This command is only available to the bot owner.',
-        ephemeral: true,
+        flags: [MessageFlags.Ephemeral],
       });
     }
 
     try {
       const typeOption = interaction.options.getString('type')?.toLowerCase();
-      const availableTypes = [...Object.keys(prompts), 'theme']; // Adding 'theme' as it is separate in cron
+      const availableTypes = [...Object.keys(prompts), 'theme'];
 
       if (typeOption === 'help') {
         return interaction.reply({
           content: `**Available prompt types:**\n- ${availableTypes.join('\n- ')}\n\nLeave blank for a random one.`,
-          ephemeral: true
+          flags: [MessageFlags.Ephemeral],
         });
       }
-
-      await interaction.deferReply();
 
       let targetType = typeOption;
       if (!targetType) {
@@ -40,10 +47,14 @@ export default {
       }
 
       if (!availableTypes.includes(targetType)) {
-        return interaction.editReply({
-          content: `Unknown prompt type: \`${targetType}\`. Use \`/prompt-test help\` to see available types.`
+        // This case shouldn't be reached often due to Choices, but good for manual API calls
+        return interaction.reply({
+          content: `Unknown prompt type: \`${targetType}\`. Use \`/prompt-test help\` to see available types.`,
+          flags: [MessageFlags.Ephemeral],
         });
       }
+
+      await interaction.deferReply();
 
       console.log(`Generating prompt: ${targetType}`);
 
@@ -74,7 +85,7 @@ export default {
       } else {
         await interaction.reply({
           content: 'Failed to generate prompt.',
-          ephemeral: true
+          flags: [MessageFlags.Ephemeral],
         });
       }
     }

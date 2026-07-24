@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits } from 'discord.js';
+import { Client, GatewayIntentBits, MessageFlags } from 'discord.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -37,7 +37,7 @@ client.on('interactionCreate', async (interaction) => {
     const remaining = Math.ceil((COMMAND_COOLDOWN_MS - (now - last)) / 1000);
     return interaction.reply({
       content: `Please wait ${remaining} second${remaining === 1 ? '' : 's'} before using \`/${commandName}\` again.`,
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
   }
 
@@ -54,7 +54,7 @@ client.on('interactionCreate', async (interaction) => {
     if (!handler) {
       return interaction.reply({
         content: `Unknown command: ${commandName}`,
-        ephemeral: true,
+        flags: [MessageFlags.Ephemeral],
       });
     }
 
@@ -64,7 +64,7 @@ client.on('interactionCreate', async (interaction) => {
     if (interaction.deferred || interaction.replied) {
       await interaction.editReply({ content: 'An internal error occurred while running this command.' });
     } else {
-      await interaction.reply({ content: 'An internal error occurred while running this command.', ephemeral: true });
+      await interaction.reply({ content: 'An internal error occurred while running this command.', flags: [MessageFlags.Ephemeral] });
     }
   }
 });

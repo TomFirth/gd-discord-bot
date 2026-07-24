@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { EmbedBuilder } from 'discord.js';
+import { EmbedBuilder, MessageFlags } from 'discord.js';
 import axios from 'axios';
 
 const command = new SlashCommandBuilder()
@@ -169,7 +169,7 @@ export async function compareGames(interaction) {
     if (interaction.deferred || interaction.replied) {
       return interaction.editReply('An error occurred while comparing Steam libraries.');
     }
-    return interaction.reply({ content: 'An error occurred while comparing Steam libraries.', ephemeral: true });
+    return interaction.reply({ content: 'An error occurred while comparing Steam libraries.', flags: [MessageFlags.Ephemeral] });
   }
 }
 

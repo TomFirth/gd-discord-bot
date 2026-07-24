@@ -1,7 +1,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { EmbedBuilder } from 'discord.js';
+import { EmbedBuilder, MessageFlags } from 'discord.js';
 import axios from 'axios';
 import { google } from 'googleapis';
 import { withRetry } from '../utils/retry.js';
@@ -261,11 +261,11 @@ const commandHandler = async (interaction) => {
   if (!documentIds.length) {
     return interaction.reply({
       content: 'No Google Doc IDs are configured. Set GAME_IDEAS_DOC_IDS to a comma-separated list of document IDs or URLs.',
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
   }
 
-  await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
 
   try {
     const auth = createAuth();
