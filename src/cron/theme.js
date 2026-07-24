@@ -2,6 +2,7 @@ import { CronJob } from 'cron';
 import dotenv from 'dotenv';
 import axios from 'axios';
 import { withRetry } from '../utils/retry.js';
+import { queueLlmRequest } from '../services/llmQueue.js';
 
 dotenv.config();
 
@@ -51,20 +52,22 @@ const fetchLlmTheme = async () => {
 
   const startedAt = Date.now();
 
-  const response = await withRetry(
-    () => axios.post(url, body, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(LLM_API_KEY
-          ? { Authorization: `Bearer ${LLM_API_KEY}` }
-          : {}),
-      },
-      timeout: 30000,
-    }),
-    {
-      retries: 0,
-      baseDelayMs: 400,
-    }
+  const response = await queueLlmRequest(() =>
+    withRetry(
+      () => axios.post(url, body, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(LLM_API_KEY
+            ? { Authorization: `Bearer ${LLM_API_KEY}` }
+            : {}),
+        },
+        timeout: 90000,
+      }),
+      {
+        retries: 0,
+        baseDelayMs: 400,
+      }
+    )
   );
 
   console.log(`Theme response received in ${Date.now() - startedAt}ms`);
