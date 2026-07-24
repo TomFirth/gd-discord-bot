@@ -42,17 +42,17 @@ export const generatePromptText = async (type) => {
     };
 
     const response = await withRetry(() => axios.post(
-      `${LLM_BASE_URL}/chat/completions`,
+      `${LLM_BASE_URL}/v1/chat/completions`,
       body,
       {
         headers: {
           'Content-Type': 'application/json',
           ...(LLM_API_KEY ? { Authorization: `Bearer ${LLM_API_KEY}` } : {}),
         },
+        timeout: 30000,
       }
     ), { retries: 3, baseDelayMs: 400 });
 
-    console.log('LLM RESPONSE:', JSON.stringify(response.data, null, 2));
     const generated = response.data?.choices?.[0]?.message?.content;
     return cleanPromptText(generated);
   } catch (error) {

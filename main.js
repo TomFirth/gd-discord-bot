@@ -14,31 +14,12 @@ const client = new Client({
   ],
 });
 
-const oldOn = client.on.bind(client);
-
-client.on = (event, listener) => {
-  console.log(`Registered listener for ${event}`);
-  console.trace();
-
-  return oldOn(event, listener);
-};
-
 client.login(process.env.BOT_TOKEN);
 
-client.once('clientReady', async () => {
+client.once('ready', async () => {
   console.log(`Bot started at ${new Date()}`);
   await initializeScheduledEvents(client);
   await initializeStreams(client);
-
-  console.log(client.eventNames());
-
-  for (const event of client.eventNames()) {
-    console.log(event, client.listenerCount(event));
-  }
-
-  for (const listener of client.listeners('messageCreate')) {
-    console.log(listener.toString());
-  }
 });
 
 const commandCooldowns = new Map();

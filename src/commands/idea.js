@@ -172,13 +172,14 @@ const fetchIdeaEnhancement = async (idea) => {
   };
 
   const response = await withRetry(() => axios.post(
-    `${LLM_BASE_URL}/chat/completions`,
+    `${LLM_BASE_URL}/v1/chat/completions`,
     body,
     {
       headers: {
         'Content-Type': 'application/json',
         ...(process.env.LLAMA_API_KEY ? { Authorization: `Bearer ${process.env.LLAMA_API_KEY}` } : {}),
       },
+      timeout: 30000,
     },
   ), { retries: 3, baseDelayMs: 400 });
 
