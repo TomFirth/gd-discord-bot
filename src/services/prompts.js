@@ -2,6 +2,7 @@ import { CronJob } from 'cron';
 import dotenv from 'dotenv';
 import axios from 'axios';
 import { withRetry } from '../utils/retry.js';
+import { queueLlmRequest } from './llmQueue.js';
 
 dotenv.config();
 
@@ -29,6 +30,8 @@ export const generatePromptText = async (type) => {
     throw new Error(`Unknown prompt type: ${type}`);
   }
 
+  const startedAt = Date.now();
+
   try {
     const body = {
       model: LLM_MODEL || 'qwen2.5-coder-3b-instruct-q4_k_m.gguf',
@@ -42,25 +45,44 @@ export const generatePromptText = async (type) => {
       ],
     };
 
-    const url = `${LLM_BASE_URL}/v1/chat/completions`.replace(/\/v1\/v1\//, '/v1/');
-    console.log(`LLM Request URL (prompt): ${url}`);
+    const url = `${LLM_BASE_URL}/v1/chat/completions`
+      .replace(/\/v1\/v1\//, '/v1/');
 
-    const response = await withRetry(() => axios.post(
-      url,
-      body,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(LLM_API_KEY ? { Authorization: `Bearer ${LLM_API_KEY}` } : {}),
-        },
-        timeout: 30000,
-      }
-    ), { retries: 3, baseDelayMs: 400 });
+    console.log(`LLM request queued (${type}): ${url}`);
+
+    const response = await queueLlmRequest(async () => {
+      console.log(`LLM request started (${type})`);
+
+      return withRetry(() => axios.post(
+        url,
+        body,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            ...(LLM_API_KEY
+              ? { Authorization: `Bearer ${LLM_API_KEY}` }
+              : {}),
+          },
+          timeout: 90000,
+        }
+      ), {
+        retries: 0,
+        baseDelayMs: 400,
+      });
+    });
+
+    console.log(
+      `LLM response received (${type}) in ${Date.now() - startedAt}ms`
+    );
 
     const generated = response.data?.choices?.[0]?.message?.content;
     return cleanPromptText(generated);
   } catch (error) {
-    console.error(`Prompt generation error (${type}):`, error.message);
+    console.error(`Prompt generation error (${type}) after ${Date.now() - startedAt}ms:`, {
+      message: error.message,
+      code: error.code,
+    });
+
     return '';
   }
 };
@@ -111,8 +133,14 @@ const sendPrompt = async (client, type) => {
 };
 
 const schedulePrompt = (client, type, cronSchedule) => {
-  new CronJob(cronSchedule, () => {
-    sendPrompt(client, type);
+  new CronJob(cronSchedule, async () => {
+    console.log(`Scheduled prompt triggered: ${type}`);
+
+    try {
+      await sendPrompt(client, type);
+    } catch (error) {
+      console.error(`Scheduled prompt failed (${type}):`, error);
+    }
   }).start();
 };
 
