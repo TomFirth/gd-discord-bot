@@ -161,7 +161,7 @@ export const parseLlmEnhancement = (rawText = '') => {
 const fetchIdeaEnhancement = async (idea) => {
   const prompt = buildIdeaPrompt(idea);
   const body = {
-    model: process.env.LLAMA_MODEL || 'qwen2.5-coder',
+    model: process.env.LLAMA_MODEL || 'qwen2.5-coder-3b-instruct-q4_k_m.gguf',
     stream: false,
     messages: [
       {
@@ -171,8 +171,9 @@ const fetchIdeaEnhancement = async (idea) => {
     ],
   };
 
+  const url = `${LLM_BASE_URL}/v1/chat/completions`.replace(/([^:]\/)\/+/g, '$1');
   const response = await withRetry(() => axios.post(
-    `${LLM_BASE_URL}/v1/chat/completions`,
+    url,
     body,
     {
       headers: {

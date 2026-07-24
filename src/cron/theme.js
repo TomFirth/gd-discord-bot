@@ -26,7 +26,7 @@ const cleanThemeText = (text) => {
 const fetchLlmTheme = async () => {
   const prompt = 'Generate one creative (but don\'t be too weird, make it appropriate for a gamejam and try to make it a single word) game jam theme. Respond with only the theme text, no explanation or punctuation.';
   const body = {
-    model: LLM_MODEL || 'qwen2.5-coder',
+    model: LLM_MODEL || 'qwen2.5-coder-3b-instruct-q4_k_m.gguf',
     stream: false,
     messages: [
       {
@@ -36,8 +36,11 @@ const fetchLlmTheme = async () => {
     ],
   };
 
+  const url = `${LLM_BASE_URL}/v1/chat/completions`.replace(/([^:]\/)\/+/g, '$1');
+  console.log(`LLM Request URL (theme): ${url}`);
+
   const response = await withRetry(() => axios.post(
-    `${LLM_BASE_URL}/v1/chat/completions`,
+    url,
     body,
     {
       headers: {

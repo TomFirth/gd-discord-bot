@@ -31,7 +31,7 @@ export const generatePromptText = async (type) => {
 
   try {
     const body = {
-      model: LLM_MODEL || 'qwen2.5-coder',
+      model: LLM_MODEL || 'qwen2.5-coder-3b-instruct-q4_k_m.gguf',
       stream: false,
       messages: [
         {
@@ -41,8 +41,11 @@ export const generatePromptText = async (type) => {
       ],
     };
 
+    const url = `${LLM_BASE_URL}/v1/chat/completions`.replace(/([^:]\/)\/+/g, '$1');
+    console.log(`LLM Request URL (prompt): ${url}`);
+
     const response = await withRetry(() => axios.post(
-      `${LLM_BASE_URL}/v1/chat/completions`,
+      url,
       body,
       {
         headers: {
