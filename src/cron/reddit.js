@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Parser from 'rss-parser';
 import { CronJob } from 'cron';
+import { EmbedBuilder } from 'discord.js';
 import dotenv from 'dotenv';
 import { withRetry } from '../utils/retry.js';
 
@@ -68,8 +69,14 @@ export const startRedditFeeds = (client) => {
       const validPosts = posts.filter(Boolean);
       if (validPosts.length === 0) return;
 
-      const message = validPosts.map(post => `**/r/${post.subreddit}**: ${post.title}\n${post.url}`).join('\n\n');
-      await discordChannel.send(message);
+      const embeds = validPosts.map((post) => new EmbedBuilder()
+        .setTitle(post.title)
+        .setURL(post.url)
+        .setDescription(`**/r/${post.subreddit}**`)
+        .setTimestamp(new Date(post.published))
+      );
+
+      await discordChannel.send({ embeds });
     }).start();
   });
 };

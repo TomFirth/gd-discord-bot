@@ -5,6 +5,7 @@ dotenv.config();
 import { commandHandlers } from './src/commands/index.js';
 import { initializeScheduledEvents } from './src/cron/index.js';
 import { initializeStreams } from './src/stream/index.js';
+import { addLocalGameIdeaFromText, importHistoricalChatIdeas } from './src/commands/idea.js';
 
 const client = new Client({
   intents: [
@@ -20,6 +21,9 @@ client.once('clientReady', async (readyClient) => {
   console.log(`Bot started at ${new Date()}`);
   await initializeScheduledEvents(readyClient);
   await initializeStreams(readyClient);
+
+  importHistoricalChatIdeas(readyClient)
+    .catch((error) => console.error('Historical game idea import failed:', error));
 });
 
 const commandCooldowns = new Map();
@@ -69,10 +73,15 @@ client.on('interactionCreate', async (interaction) => {
   }
 });
 
-client.on('messageCreate', (message) => {
+client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
 
   if (message.content.startsWith('!remindme')) {
     message.channel.send('Remind yourself.');
+    return;
+  }
+
+  if (addLocalGameIdeaFromText(message.content)) {
+    console.log('Saved a new local game idea from chat.');
   }
 });
