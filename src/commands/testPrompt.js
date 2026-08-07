@@ -16,6 +16,7 @@ export default {
           { name: 'Theme', value: 'theme' },
           { name: 'Dev Tip', value: 'devtip' },
           { name: 'Showcase', value: 'showcase' },
+          { name: 'Tutorial', value: 'tutorial' },
           { name: 'Story', value: 'story' },
           { name: 'Marketing', value: 'marketing' },
           { name: 'Help', value: 'help' },

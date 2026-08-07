@@ -110,7 +110,8 @@ export const prompts = {
   challenge: 'Give one concise game development challenge for today. Something that can be done in a few hours. Respond with only the challenge text, no bullet points, no explanation.',
   devtip: 'Give one concise game development tip or best practice. Respond with only the tip text, no bullet points, no explanation.',
   showcase: 'Suggest one indie game developer or studio to showcase. Respond with the name and a brief description of their style, then include one relevant link to a YouTube trailer, Reddit post, or official website.',
-  story: 'Create one short game story hook or lore prompt. Respond with only the hook text, no explanation.',
+  tutorial: 'Find a recent, quick, simple game development tutorial on YouTube. Keep it broadly applicable to any engine or toolkit. Respond with only one YouTube video link and nothing else.',
+  story: 'Create one short game story hook or lore prompt. Use up to 32 tokens and stop at the last full stop if you need to shorten the answer. Prefer a complete sentence. Respond with only the hook text, no explanation.',
   marketing: 'Give one actionable marketing task for a game studio posting to social media. Keep it concise, specific, and easy to execute. Respond with only the task text, no bullet points, no explanation.',
 };
 
@@ -169,7 +170,7 @@ export const generatePromptText = async (type) => {
     );
 
     const generated = response.data?.choices?.[0]?.message?.content;
-    return cleanPromptText(generated);
+    return cleanPromptText(generated, type);
   } catch (error) {
     console.error(`Prompt generation error (${type}) after ${Date.now() - startedAt}ms:`, {
       message: error.message,
@@ -180,14 +181,24 @@ export const generatePromptText = async (type) => {
   }
 };
 
-const cleanPromptText = (text) => {
+export const cleanPromptText = (text, type = '') => {
   if (!text) return '';
-  return text
+
+  let cleaned = text
     .split('\n')[0]
     .trim()
     .replace(/^['"\s]+/, '')
     .replace(/['"\s]+$/, '')
     .trim();
+
+  if (type === 'story' && !cleaned.endsWith('.')) {
+    const lastFullStop = cleaned.lastIndexOf('.');
+    if (lastFullStop !== -1) {
+      cleaned = cleaned.slice(0, lastFullStop + 1).trim();
+    }
+  }
+
+  return cleaned;
 };
 
 export const buildMarketingMessage = (suggestion) => {
