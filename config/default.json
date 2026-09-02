@@ -37,5 +37,14 @@
   "urls": {
     "free": "https://steamcommunity.com/groups/freegamesfinders/rss/"
   },
-	"guildId": "1262380130148290651"
+	"guildId": "1262380130148290651",
+  "youtube": {
+    "feeds": {
+      "unity": {
+      "channelHandle": "@unity",
+      "discordChannel": "general",
+      "intervalSeconds": 3600
+      }
+    }
+  }
 }

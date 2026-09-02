@@ -109,6 +109,11 @@ const PATTERNS = [
 ];
 
 export const startYoutubeFeeds = (client) => {
+  if (!config?.has || !config.has('youtube.feeds')) {
+    console.log('youtube.feeds not configured — skipping YouTube streamer');
+    return;
+  }
+
   const feeds = config.get('youtube.feeds');
 
   // Default polling interval (seconds) if not provided per-feed
