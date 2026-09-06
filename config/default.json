@@ -37,7 +37,46 @@
   "urls": {
     "free": "https://steamcommunity.com/groups/freegamesfinders/rss/"
   },
-	"guildId": "1262380130148290651",
+  "rss": {
+    "feeds": {
+      "inklestudios": {
+        "url": "https://medium.com/feed/@inklestudios",
+        "channel": "general",
+        "intervalSeconds": 86400
+      },
+      "introversion": {
+        "url": "https://feeds.feedburner.com/introversion_blog",
+        "channel": "general",
+        "intervalSeconds": 86400
+      },
+      "codinghorror": {
+        "url": "https://blog.codinghorror.com/rss/",
+        "channel": "general",
+        "intervalSeconds": 86400
+      },
+      "distractionware": {
+        "url": "https://distractionware.com/blog/feed",
+        "channel": "general",
+        "intervalSeconds": 86400
+      },
+      "markbrown": {
+        "url": "https://markbrown.co.uk/feed/",
+        "channel": "general",
+        "intervalSeconds": 86400
+      },
+      "mikebithell": {
+        "url": "https://mikebithell.com/feed/",
+        "channel": "general",
+        "intervalSeconds": 86400
+      },
+      "tomfrancis": {
+        "url": "https://tomfrancis.com/feed/",
+        "channel": "general",
+        "intervalSeconds": 86400
+      }
+    }
+  },
+  "guildId": "1262380130148290651",
   "youtube": {
     "feeds": {
       "unity": {
