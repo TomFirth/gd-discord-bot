@@ -75,16 +75,8 @@ const checkSingleFeed = async (client, feedKey, feedConfig) => {
       const uniqueId = `${item.link || item.guid || item.title}-${item.pubDate || item.isoDate || ''}`;
       if (postedSet.has(uniqueId)) continue;
 
-      // Build embed
-      const description = (item.contentSnippet || item.content || item.summary || item.description || '').replace(/<[^>]+>/g, '');
-      const embed = new EmbedBuilder()
-        .setTitle(item.title || 'Untitled')
-        .setURL(item.link || '')
-        .setDescription(description || 'No description available.')
-        .setTimestamp(item.pubDate ? new Date(item.pubDate) : (item.isoDate ? new Date(item.isoDate) : new Date()));
-
-      const thumb = item.enclosure && item.enclosure.url ? item.enclosure.url : (item.thumbnail || null);
-      if (thumb) embed.setThumbnail(thumb);
+      // Use the item's URL as plain message content so Discord will unfurl it
+      const url = item.link || '';
 
       // Resolve discord channel id
       const targetName = feedConfig.channel || 'general';
@@ -112,7 +104,7 @@ const checkSingleFeed = async (client, feedKey, feedConfig) => {
       }
 
       try {
-        const sent = await discordChannel.send({ embeds: [embed] });
+        const sent = await discordChannel.send({ content: url });
         try { await sent.crosspost(); } catch (err) { /* ignore */ }
         try { await sent.react('👍'); await sent.react('👎'); } catch (err) { /* ignore */ }
 

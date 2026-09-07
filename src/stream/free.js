@@ -61,13 +61,7 @@ export const free = async (client) => {
 
       if (postedItems.has(uniqueId)) continue;
 
-      const embed = new EmbedBuilder()
-        .setColor(0x0099FF)
-        .setTitle(item.title || 'Untitled')
-        .setURL(item.link || '')
-        .setDescription(item.contentSnippet || item.content || item.description || 'No description available.');
-
-      const sentMessage = await channel.send({ embeds: [embed] });
+      const sentMessage = await channel.send({ content: item.link || '' });
 
       try {
         await sentMessage.crosspost();

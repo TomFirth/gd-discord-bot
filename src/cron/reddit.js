@@ -69,14 +69,9 @@ export const startRedditFeeds = (client) => {
       const validPosts = posts.filter(Boolean);
       if (validPosts.length === 0) return;
 
-      const embeds = validPosts.map((post) => new EmbedBuilder()
-        .setTitle(post.title)
-        .setURL(post.url)
-        .setDescription(`**/r/${post.subreddit}**`)
-        .setTimestamp(new Date(post.published))
-      );
-
-      await discordChannel.send({ embeds });
+      // Send plain URLs so Discord can unfurl them instead of using embeds
+      const content = validPosts.map((post) => post.url).join('\n');
+      await discordChannel.send({ content });
     }).start();
   });
 };

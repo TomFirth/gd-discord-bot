@@ -191,16 +191,9 @@ export const startYoutubeFeeds = (client) => {
                 description = description.replace(/<\/?[^>]+(>|$)/gi, '');
               }
               const url = item.link || `https://youtu.be/${(item.id && item.id.split(':').pop()) || ''}`;
-              const embed = new EmbedBuilder()
-                .setTitle(item.title || 'Untitled')
-                .setURL(url)
-                .setDescription(description)
-                .setTimestamp(item.pubDate ? new Date(item.pubDate) : (item.isoDate ? new Date(item.isoDate) : new Date()));
 
-              const thumb = (item['media:group'] && item['media:group']['media:thumbnail'] && item['media:group']['media:thumbnail'].url) || item.thumbnail || (item.enclosure && item.enclosure.url) || null;
-              if (thumb) embed.setThumbnail(thumb);
-
-              await discordChannel.send({ embeds: [embed] });
+              // Send plain URL so Discord will unfurl the video preview
+              await discordChannel.send({ content: url });
 
               // Mark posted and update lastSeen
               postedItems.add(uniqueId);
