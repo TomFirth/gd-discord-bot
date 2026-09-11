@@ -64,12 +64,10 @@ Example:
 
 ## Scheduled content
 
-The bot’s scheduled jobs are configured in [config/default.json](config/default.json). Current prompt types include:
+The bot's scheduled jobs are configured in [config/default.json](config/default.json). Current prompt types include:
 
 - `devtip` — Wednesday at 12:00
 - `showcase` — Friday at 17:00
-- `audio` — Friday at 11:00
-- `story` — Friday at 13:00
 - `theme` — Friday at 09:00
 
 ## Project structure
@@ -82,3 +80,5 @@ The bot’s scheduled jobs are configured in [config/default.json](config/defaul
 ## Notes
 
 - The free-game stream stores previously posted items in the [data](data) folder so it does not repost the same entries repeatedly.
+- Use `./deploy.sh` to deploy the latest changes to the server (requires SSH access configured)
+

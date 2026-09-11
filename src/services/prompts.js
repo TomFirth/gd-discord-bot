@@ -110,9 +110,7 @@ export const prompts = {
   challenge: 'Give one concise game development challenge for today. Something that can be done in a few hours. Respond with only the challenge text, no bullet points, no explanation.',
   devtip: 'Give one concise game development tip or best practice. Respond with only the tip text, no bullet points, no explanation.',
   showcase: 'Suggest one indie game developer or studio to showcase. Respond with the name and a brief description of their style, then include one relevant link to a YouTube trailer, Reddit post, or official website.',
-  tutorial: 'Find a recent, quick, simple game development tutorial on YouTube. Keep it broadly applicable to any engine or toolkit. Respond with only one YouTube video link and nothing else.',
-  story: 'Create one short game story hook or lore prompt. Use up to 32 tokens and stop at the last full stop if you need to shorten the answer. Prefer a complete sentence. Respond with only the hook text, no explanation.',
-  marketing: 'Give one actionable marketing task for a game studio posting to social media. Keep it concise, specific, and easy to execute. Respond with only the task text, no bullet points, no explanation.',
+   tutorial: 'Find a recent, quick, simple game development tutorial on YouTube. Keep it broadly applicable to any engine or toolkit. Respond with only one YouTube video link and nothing else.',
 };
 
 export const generatePromptText = async (type) => {
@@ -191,61 +189,7 @@ export const cleanPromptText = (text, type = '') => {
     .replace(/['"\s]+$/, '')
     .trim();
 
-  if (type === 'story' && !cleaned.endsWith('.')) {
-    const lastFullStop = cleaned.lastIndexOf('.');
-    if (lastFullStop !== -1) {
-      cleaned = cleaned.slice(0, lastFullStop + 1).trim();
-    }
-  }
-
   return cleaned;
-};
-
-export const buildMarketingMessage = (suggestion) => {
-  const cleanedSuggestion = (suggestion || '').trim();
-  const highlightedText = cleanedSuggestion.length > 120
-    ? `${cleanedSuggestion.slice(0, 117)}...`
-    : cleanedSuggestion;
-
-  return {
-    embeds: [{
-      color: 0x1d4ed8,
-      title: 'Marketing idea',
-      description: highlightedText,
-    }],
-  };
-};
-
-const sendPrompt = async (client, type) => {
-  const targetChannelId = type === 'marketing' ? config.get('channelIds.marketing') : channelId;
-  const channel = client.channels.cache.get(targetChannelId);
-  if (!channel) return;
-
-  const promptText = await generateUniquePromptText(type);
-  const header = `**${type.toUpperCase()}: **`;
-
-  if (type === 'marketing') {
-    await channel.send(buildMarketingMessage(promptText));
-    return;
-  }
-
-  await channel.send(
-    promptText
-      ? `${header}${promptText}`
-      : `${header}Failed to generate prompt`
-  );
-};
-
-const schedulePrompt = (client, type, cronSchedule) => {
-  new CronJob(cronSchedule, async () => {
-    console.log(`Scheduled prompt triggered: ${type}`);
-
-    try {
-      await sendPrompt(client, type);
-    } catch (error) {
-      console.error(`Scheduled prompt failed (${type}):`, error);
-    }
-  }).start();
 };
 
 export const initializePromptSchedules = (client) => {
@@ -253,6 +197,6 @@ export const initializePromptSchedules = (client) => {
   schedulePrompt(client, 'challenge', scheduleConfig.challenge);
   schedulePrompt(client, 'devtip', scheduleConfig.devtip);
   schedulePrompt(client, 'showcase', scheduleConfig.showcase);
-  schedulePrompt(client, 'story', scheduleConfig.story);
-  schedulePrompt(client, 'marketing', scheduleConfig.marketing);
 };
+
+

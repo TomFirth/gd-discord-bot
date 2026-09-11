@@ -3,17 +3,14 @@
     "challenges": "1262740122185633842",
     "freegames": "1299312647451185213",
     "general": "1262380130693808212",
-    "unrelated": "1293544258162266122",
-    "marketing": "1483847643581906974"
+    "unrelated": "1293544258162266122"
   },
   "schedule": {
     "challenge": "0 17 * * 1",
     "theme": "00 9 * * 5",
     "devtip": "0 12 * * 3",
     "showcase": "0 17 * * 5",
-    "story": "0 13 * * 5",
-    "tutorial": "0 9 * * 6",
-    "marketing": "0 13 */3 * *"
+    "tutorial": "0 9 * * 6"
   },
   "reddit": {
     "feeds": {
