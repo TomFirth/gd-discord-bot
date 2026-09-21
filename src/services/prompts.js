@@ -110,7 +110,7 @@ export const prompts = {
   challenge: 'Give one concise game development challenge for today. Something that can be done in a few hours. Respond with only the challenge text, no bullet points, no explanation.',
   devtip: 'Give one concise game development tip or best practice. Respond with only the tip text, no bullet points, no explanation.',
   showcase: 'Suggest one indie game developer or studio to showcase. Respond with the name and a brief description of their style, then include one relevant link to a YouTube trailer, Reddit post, or official website.',
-   tutorial: 'Find a recent, quick, simple game development tutorial on YouTube. Keep it broadly applicable to any engine or toolkit. Respond with only one YouTube video link and nothing else.',
+  tutorial: 'Find a recent, quick, simple game development tutorial on YouTube. Keep it broadly applicable to any engine or toolkit. Respond with only one YouTube video link and nothing else.',
 };
 
 export const generatePromptText = async (type) => {
@@ -192,11 +192,18 @@ export const cleanPromptText = (text, type = '') => {
   return cleaned;
 };
 
+const schedulePrompt = (client, type, cronSchedule) => {
+  new CronJob(cronSchedule, () => {
+    sendPrompt(client, type);
+  }).start();
+};
+
 export const initializePromptSchedules = (client) => {
   const scheduleConfig = config.get('schedule');
   schedulePrompt(client, 'challenge', scheduleConfig.challenge);
   schedulePrompt(client, 'devtip', scheduleConfig.devtip);
   schedulePrompt(client, 'showcase', scheduleConfig.showcase);
+  schedulePrompt(client, 'tutorial', scheduleConfig.tutorial);
 };
 
 

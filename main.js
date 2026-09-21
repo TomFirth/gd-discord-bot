@@ -15,7 +15,12 @@ const client = new Client({
   ],
 });
 
-client.login(process.env.BOT_TOKEN);
+try {
+  await client.login(process.env.BOT_TOKEN);
+} catch (error) {
+  console.error('Discord login failed:', error);
+  process.exit(1);
+}
 
 client.once('clientReady', async (readyClient) => {
   console.log(`Bot started at ${new Date()}`);
@@ -65,10 +70,20 @@ client.on('interactionCreate', async (interaction) => {
     await handler(interaction);
   } catch (error) {
     console.error('Command execution error:', error);
-    if (interaction.deferred || interaction.replied) {
-      await interaction.editReply({ content: 'An internal error occurred while running this command.' });
-    } else {
-      await interaction.reply({ content: 'An internal error occurred while running this command.', flags: [MessageFlags.Ephemeral] });
+
+    try {
+      if (interaction.deferred || interaction.replied) {
+        await interaction.editReply({
+          content: 'An internal error occurred while running this command.',
+        });
+      } else {
+        await interaction.reply({
+          content: 'An internal error occurred while running this command.',
+          flags: [MessageFlags.Ephemeral],
+        });
+      }
+    } catch (replyError) {
+      console.error('Failed to send command error response:', replyError);
     }
   }
 });
